@@ -1,0 +1,45 @@
+{
+    "name": "c4tech/foundation",
+    "description": "Provides some foundational functionality",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Marcus Amargi",
+            "email": "marcus@c4tech.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Christopher Roussel",
+            "email": "chris@c4tech.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Alton Torregano",
+            "email": "alton@c4tech.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "~4.2"
+    },
+    "require-dev": {
+        "mockery/mockery": "~0.9",
+        "phpunit/phpunit": "~4.1",
+        "codeception/specify": "~0.3",
+        "codeception/verify": "~0.2"
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.c4tech.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "C4tech\\Foundation\\": "src/",
+            "C4tech\\Test\\Foundation\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+}
