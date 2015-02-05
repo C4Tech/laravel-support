@@ -1,9 +1,9 @@
-<?php namespace C4tech\Foundation\Traits;
+<?php namespace C4tech\Support\Traits;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use C4tech\Foundation\Model;
+use C4tech\Support\Model;
 
 /**
  * Functionality related to caching data.
@@ -29,100 +29,50 @@ trait Cacheable
     protected static $cache_time = 10;
 
     /**
-     * The Model to wrap in an instance.
+     * The Model wrapped in the instance.
      * @var \C4tech\Foundation\Model
      */
     protected $object = null;
 
     /**
-     * Find
-     *
-     * A glorified Singleton handler that brings along an actual Model.
-     * @param  integer $object_id The primary id of the object.
-     * @param  boolean $force     Force reloading the data?
-     * @return static             Repository wrapper.
-     */
-    public static function &find($object_id, $force = false)
-    {
-        $key = static::formatTag($object_id);
-
-        if (!isset(static::$instances[$key]) || $force) {
-            $model = static::$class;
-            $query = $model::query()
-                ->cacheTags($key)
-                ->remember(static::$cache_time);
-
-            if ($object = $query->find($object_id)) {
-                // Save the instance in memory if we find it
-                static::$instances[$key] = static::make($object);
-            } elseif ($force) {
-                // Remove the in-memory cache if it no longer exists in the DB
-                unset(static::$instances[$key]);
-            }
-        }
-
-        return static::$instances[$key];
-    }
-
-    /**
-     * Make
-     *
-     * Create a new, empty model.
-     * @return static
-     */
-    public static function make(Model $model = null)
-    {
-        return new static($model);
-    }
-
-    /**
      * Boot
      *
-     * Simple boot method that adds Model event listeners for expiring related cache objects selectively.
+     * Simple boot method that adds Model event listeners for expiring related
+     * cache objects selectively.
+     * @param  string $class Class name to bind
      * @return void
      */
     public static function boot($class = null)
     {
         $class = ($class) ?: get_called_class();
+        $model = static::$class;
+
+        if (!$model) {
+            return;
+        }
+
         // Flush caches related to the campaign
         if (Config::get('app.debug')) {
-            Log::info('Binding cache flusher for model.', ['model' => $class]);
+            Log::info('Binding cache flusher for model.', ['model' => $model]);
         }
-        $clear_cache = function ($model) use ($class) {
-            $tags = $class::formatTag($model->id);
+
+        $clear_cache = function ($object) use ($class) {
+            $tag = $class::formatTag($object->id, 'object');
             if (Config::get('app.debug')) {
-                Log::debug('Flushing model cache', ['tags' => $tags]);
+                Log::debug('Flushing model cache', ['tag' => $tag]);
             }
-            Cache::tags($tags)->flush();
+            Cache::tags([$tag])->flush();
         };
-        static::saved($clear_cache);
-        static::deleted($clear_cache);
-    }
 
-    /**
-     * Set Model
-     *
-     * Adds the Model to the memory cache
-     * @param \C4tech\Foundation\Model $object The model to wrap
-     */
-    protected function setModel(Model $model = null)
-    {
-        if (is_null($model)) {
-            $class = static::$class;
-            $model = new $class;
-        }
-
-        $this->object = $model;
-        $key = static::formatTag($model->id);
-        if ($model->exists && !isset(static::$instances[$key])) {
-            static::$instances[$key] = $this;
-        }
+        $model::saved($clear_cache);
+        $model::deleted($clear_cache);
     }
 
     /**
      * Build Tag
      *
-     * Helper method to create a cache tag for the related model.
+     * Helper method to create a cache tag for the related model. General format
+     * is {class}-{id}(-{suffx})? (e.g. App\Models\Users-18, App\Models\Users-10-posts)
      * @param  string $base   Base tag
      * @param  int    $oid    Object ID
      * @param  string $suffix Additional text to inject into tag
@@ -143,8 +93,9 @@ trait Cacheable
      * Format Tag
      *
      * Helper method to create a cache tag for the related model.
-     * @param  int    $oid Object ID
-     * @return string      Cache tag
+     * @param  int    $oid    Object ID
+     * @param  string $suffix Additional text to inject into tag
+     * @return string         Cache tag
      */
     public static function formatTag($oid, $suffix = null)
     {
@@ -155,10 +106,81 @@ trait Cacheable
      * Get Tags
      *
      * Retrieves the tags which should be set for a read query.
-     * @return array Cache tag
+     * @param  string $suffix Additional text to inject into tag
+     * @return array  Cache tags
      */
     public function getTags($suffix = null)
     {
-        return [static::formatTag($this->object->id, $suffix)];
+        $tags = [static::formatTag($this->object->id)];
+        if (!is_null($suffix)) {
+            $tags[] = static::formatTag($this->object->id, $suffix);
+        }
+
+        return $tags;
+    }
+
+    /**
+     * Find
+     *
+     * A glorified Manager that brings along an actual Model.
+     * @param  integer $object_id The primary id of the object.
+     * @param  boolean $force     Force reloading the data?
+     * @return static             Repository wrapper.
+     */
+    public function &find($object_id, $force = false)
+    {
+        $key = static::formatTag($object_id);
+        $cache_key = static::formatTag($object_id, 'object');
+
+        if (!isset(static::$instances[$key]) || $force) {
+            $model = static::$class;
+            $query = $model::query()
+                ->cacheTags([$key, $cache_key])
+                ->remember(static::$cache_time);
+
+            // Remove the in-memory cache
+            if ($force) {
+                unset(static::$instances[$key]);
+            }
+
+            // Save the instance in memory if we find it
+            if ($object = $query->find($object_id)) {
+                static::$instances[$key] = $this->make($object);
+            }
+        }
+
+        return static::$instances[$key];
+    }
+
+    /**
+     * Make
+     *
+     * Create a new, empty model.
+     * @param \C4tech\Support\Model $object The model to wrap
+     * @return static
+     */
+    public function make(Model $model = null)
+    {
+        return new static($model);
+    }
+
+    /**
+     * Set Model
+     *
+     * Adds the Model to the memory cache
+     * @param \C4tech\Support\Model $object The model to wrap
+     */
+    protected function setModel(Model $model = null)
+    {
+        if (is_null($model)) {
+            $class = static::$class;
+            $model = new $class;
+        }
+
+        $this->object = $model;
+        $key = static::formatTag($model->id);
+        if ($model->exists && !isset(static::$instances[$key])) {
+            static::$instances[$key] = $this;
+        }
     }
 }

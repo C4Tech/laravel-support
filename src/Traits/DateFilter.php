@@ -1,4 +1,4 @@
-<?php namespace C4tech\Foundation\Traits;
+<?php namespace C4tech\Support\Traits;
 
 use Carbon\Carbon;
 

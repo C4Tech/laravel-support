@@ -1,4 +1,4 @@
-<?php namespace C4tech\Foundation;
+<?php namespace C4tech\Support;
 
 use Robbo\Presenter\Presenter as BasePresenter;
 
@@ -22,7 +22,7 @@ class Presenter extends BasePresenter
     /**
      * Present Repository
      *
-     * Allows calling $this->repository->method() and autoloading the 
+     * Allows calling $this->repository->method() and autoloading the
      * repository as necessary.
      * @return C4tech\Foundation\Repository A Repository if it exists
      */
