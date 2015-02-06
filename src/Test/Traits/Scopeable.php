@@ -1,6 +1,7 @@
 <?php namespace C4tech\Support\Test\Traits;
 
 use Mockery;
+use Codeception\Verify;
 
 trait Scopeable
 {
@@ -37,6 +38,7 @@ trait Scopeable
             ->once()
             ->andReturn(true);
 
+        // Handle passing an argument to the tested method
         $args = func_get_args();
         if (count($args) > 4) {
             expect($this->model->$method($query, $args[4]))->true();

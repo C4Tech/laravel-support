@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\Collection;
 use Illuminate\Routing\Controller as BaseController;
 
@@ -33,12 +34,13 @@ class Controller extends BaseController
     protected function respond($view = '', $status = 200, $headers = [])
     {
         $format = Request::format('json');
-        Log::debug('Responding via ' . $format, ['view' => $view, 'status' => $status]);
 
         // Force JSON
         if ($view == 'json') {
             $format = 'json';
         }
+
+        Log::debug('Responding via ' . $format, ['view' => $view, 'status' => $status]);
 
         switch ($format) {
             case 'html':

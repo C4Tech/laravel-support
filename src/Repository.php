@@ -1,5 +1,7 @@
 <?php namespace C4tech\Support;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Robbo\Presenter\PresentableInterface;
 

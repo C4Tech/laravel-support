@@ -1,6 +1,7 @@
 <?php namespace C4tech\Support\Test\Traits;
 
 use Mockery;
+use Codeception\Verify;
 
 trait Relatable
 {
