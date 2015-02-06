@@ -1,8 +1,9 @@
-<?php namespace C4tech\Foundation;
+<?php namespace C4tech\Support;
 
 use Illuminate\Database\Eloquent\Model as BaseModel;
 use Robbo\Presenter\PresentableInterface;
-use C4tech\Foundation\Traits\DateFilter;
+use C4tech\Support\Traits\DateFilter;
+use C4tech\Support\Traits\Presentable;
 
 /**
  * A foundation Model with useful features.
@@ -10,9 +11,9 @@ use C4tech\Foundation\Traits\DateFilter;
 class Model extends BaseModel implements PresentableInterface
 {
     /**
-     * Consume the DateFilter traits.
+     * Consume the Presentable and DateFilter traits.
      */
-    use DateFilter;
+    use DateFilter, Presentable;
 
     /**
      * @inheritdoc
@@ -20,30 +21,14 @@ class Model extends BaseModel implements PresentableInterface
     protected $guarded = ['id', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
-     * @inheritDoc
-     */
-    protected $dates = ['deleted_at'];
-
-    /**
      * Get Dates
      *
-     * Overloads the defined database fields which ought to be converted t.
-     * Carbon objects.
+     * Overloads the defined database fields which ought to be converted to
+     * Carbon objects in order to add deleted_at as a default.
      * @return array Column names to transform.
      */
     public function getDates()
     {
         return array_merge(parent::getDates(), ['deleted_at']);
-    }
-
-    /**
-     * Get Presenter
-     *
-     * Default method to return the related presenter (if any)
-     * @return mixed
-     */
-    public function getPresenter()
-    {
-        return new Presenter($this);
     }
 }

@@ -1,7 +1,7 @@
 {
-    "name": "c4tech/foundation",
-    "description": "Provides some foundational functionality",
-    "license": "proprietary",
+    "name": "c4tech/support",
+    "description": "Base classes and traits for C4-developed applications.",
+    "license": "MIT",
     "authors": [
         {
             "name": "Marcus Amargi",
@@ -21,24 +21,21 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "~4.2"
+        "nesbot/carbon": "1.x",
+        "illuminate/database": "4.x",
+        "illuminate/routing": "4.x",
+        "illuminate/support": "4.x",
+        "robclancy/presenter": "1.x"
     },
     "require-dev": {
-        "mockery/mockery": "~0.9",
-        "phpunit/phpunit": "~4.1",
-        "codeception/specify": "~0.3",
-        "codeception/verify": "~0.2"
+        "mockery/mockery": "0.x",
+        "phpunit/phpunit": "4.x",
+        "codeception/verify": "0.x"
     },
-    "repositories": [
-        {
-            "type": "composer",
-            "url": "https://packages.c4tech.com"
-        }
-    ],
     "autoload": {
         "psr-4": {
-            "C4tech\\Foundation\\": "src/",
-            "C4tech\\Test\\Foundation\\": "tests/"
+            "C4tech\\Support\\": "src/",
+            "C4tech\\Test\\Support\\": "tests/"
         }
     },
     "minimum-stability": "stable"

@@ -1,13 +1,10 @@
-<?php namespace C4tech\Foundation;
+<?php namespace C4tech\Support;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Controller as BaseController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Collection;
+use Illuminate\Routing\Controller as BaseController;
 
 /**
  * A foundation Controller with useful features.
@@ -25,14 +22,6 @@ class Controller extends BaseController
     ];
 
     /**
-     * Simple Constructor
-     */
-    public function __construct()
-    {
-        Log::debug('Starting request for ' . Request::method() . ' ' . Route::current()->getUri());
-    }
-
-    /**
      * Respond
      *
      * Generates a response according to the detected format.
@@ -45,6 +34,12 @@ class Controller extends BaseController
     {
         $format = Request::format('json');
         Log::debug('Responding via ' . $format, ['view' => $view, 'status' => $status]);
+
+        // Force JSON
+        if ($view == 'json') {
+            $format = 'json';
+        }
+
         switch ($format) {
             case 'html':
                 $response = $this->respondHtml($view, $status, $headers);
@@ -54,22 +49,6 @@ class Controller extends BaseController
                 $response = $this->respondJson($status, $headers);
                 break;
         }
-
-        return $response;
-    }
-
-    /**
-     * Respond JSON
-     *
-     * Generates a response forced into JSON.
-     * @param  integer $status  HTTP status code
-     * @param  array   $headers Headers to pass to response
-     * @return \Illuminate\Http\Response   Laravel response
-     */
-    protected function respondJson($status = 200, $headers = [])
-    {
-        $json = (!empty($this->data['json'])) ? $this->data['json'] : $this->data;
-        $response = Response::json($json, $status, $headers);
 
         return $response;
     }
@@ -95,6 +74,22 @@ class Controller extends BaseController
             );
         }
         return $response;
+    }
+
+    /**
+     * Respond JSON
+     *
+     * Generates a response forced into JSON.
+     * @param  integer $status  HTTP status code
+     * @param  array   $headers Headers to pass to response
+     * @return \Illuminate\Http\Response   Laravel response
+     */
+    protected function respondJson($status = 200, $headers = [])
+    {
+        $json = (!empty($this->data['json'])) ? $this->data['json'] : $this->data;
+        unset($json['json']);
+
+        return Response::json($json, $status, $headers);
     }
 
     /**
