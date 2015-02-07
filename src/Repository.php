@@ -101,7 +101,7 @@ abstract class Repository implements PresentableInterface
 
             // Save the instance in memory if we find it
             if ($object = $query->find($object_id)) {
-                static::$instances[$key] = new static($object);
+                static::$instances[$key] = $this->make($object);
             }
         }
 
@@ -114,13 +114,19 @@ abstract class Repository implements PresentableInterface
      */
     public function __construct(Model $model = null)
     {
-        if (is_null($model)) {
-            $model = new static::$model;
-        }
+        $this->object = $this->ensureModel($model);
+        $this->pushCache();
+    }
 
-        $this->object = $model;
-        $key = static::formatTag($model->id);
-        if ($model->exists && !isset(static::$instances[$key])) {
+    protected function ensureModel(Model $model = null)
+    {
+        return (!is_null($model)) ? $model : new static::$model;
+    }
+
+    protected function pushCache()
+    {
+        $key = $this->getTags();
+        if ($this->object->exists && !isset(static::$instances[$key])) {
             static::$instances[$key] = $this;
         }
     }
