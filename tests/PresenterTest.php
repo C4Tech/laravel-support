@@ -19,24 +19,24 @@ class PresenterTest extends TestCase
             ->shouldAllowMockingProtectedMethods();
     }
 
-    public function testPresentRepositoryNull()
+    public function testPresentRepoNull()
     {
         $this->presenter->shouldReceive('setRepository')
             ->andReturn(true);
 
-        expect($this->presenter->presentRepository())->true();
+        expect($this->presenter->presentRepo())->true();
     }
 
-    public function testPresentRepositoryValue()
+    public function testPresentRepoValue()
     {
         $repo = 'TestClass';
 
         $reflection = new ReflectionClass($this->presenter);
-        $property = $reflection->getProperty('repository_instance');
+        $property = $reflection->getProperty('instance');
         $property->setAccessible(true);
         $property->setValue($this->presenter, $repo);
 
-        expect($this->presenter->presentRepository())->equals($repo);
+        expect($this->presenter->presentRepo())->equals($repo);
     }
 
     public function testSetRepositoryNull()
@@ -49,7 +49,7 @@ class PresenterTest extends TestCase
         $class = 'stdClass';
 
         $reflection = new ReflectionClass($this->presenter);
-        $property = $reflection->getProperty('repository_class');
+        $property = $reflection->getProperty('repository');
         $property->setAccessible(true);
         $property->setValue($this->presenter, $class);
 

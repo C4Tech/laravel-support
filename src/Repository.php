@@ -12,6 +12,13 @@ use Robbo\Presenter\PresentableInterface;
  */
 abstract class Repository implements PresentableInterface
 {
+    const CACHE_SHORT =     1;
+    const CACHE_LONG  =    10;
+    const CACHE_HOUR  =    60;
+    const CACHE_DAY   =  1440;
+    const CACHE_WEEK  = 10080;
+    const CACHE_MONTH = 43200;
+
     /**
      * Holds all instances of the class identified by ID.
      * @var array
@@ -19,10 +26,10 @@ abstract class Repository implements PresentableInterface
     protected static $instances = [];
 
     /**
-     * The full, namespaced class name of the Model to wrap.
+     * The namespaced class of the Model to wrap.
      * @var string
      */
-    protected static $class = null;
+    protected static $model = null;
 
     /**
      * Default length of time in minutes to cache a query.
@@ -41,12 +48,11 @@ abstract class Repository implements PresentableInterface
      *
      * Simple boot method that adds Model event listeners for expiring related
      * cache objects selectively.
-     * @param  string $class Class name to bind
      * @return void
      */
     public function boot()
     {
-        $model = static::$class;
+        $model = static::$model;
 
         if (!$model) {
             return;
@@ -83,10 +89,10 @@ abstract class Repository implements PresentableInterface
         $cache_key = $this->formatTag($object_id, 'object');
 
         if (!isset(static::$instances[$key]) || $force) {
-            $model = static::$class;
+            $model = static::$model;
             $query = $model::query()
                 ->cacheTags([$key, $cache_key])
-                ->remember(static::$cache_time);
+                ->remember(self::CACHE_LONG);
 
             // Remove the in-memory cache
             if ($force) {
@@ -109,8 +115,7 @@ abstract class Repository implements PresentableInterface
     public function __construct(Model $model = null)
     {
         if (is_null($model)) {
-            $class = static::$class;
-            $model = new $class;
+            $model = new static::$model;
         }
 
         $this->object = $model;
@@ -121,6 +126,18 @@ abstract class Repository implements PresentableInterface
     }
 
     /**
+     * Make
+     *
+     * Create a new instance with a live Model.
+     * @param  \C4tech\Support\Model $object The Model to wrap
+     * @return static
+     */
+    public function make(Model $model)
+    {
+        return new static($model);
+    }
+
+    /**
      * Create
      *
      * Creates a new model, fills it with data, and saves it.
@@ -128,7 +145,7 @@ abstract class Repository implements PresentableInterface
      */
     public function create($data = [])
     {
-        $model = static::$class;
+        $model = static::$model;
         Log::debug('Creating new Model', ['model' => $model, 'data' => $data]);
         return new static($model::create($data));
     }
@@ -141,7 +158,7 @@ abstract class Repository implements PresentableInterface
      */
     public function update($data = [])
     {
-        Log::debug('Updating Model', ['model' => static::$class, 'id' => $this->object->id, 'data' => $data]);
+        Log::debug('Updating Model', ['model' => static::$model, 'id' => $this->object->id, 'data' => $data]);
         return $this->object->update($data);
     }
 
@@ -194,14 +211,14 @@ abstract class Repository implements PresentableInterface
      */
     public function formatTag($oid, $suffix = null)
     {
-        return static::buildTag(static::$class, $oid, $suffix);
+        return static::buildTag(static::$model, $oid, $suffix);
     }
 
     /**
      * Build Tag
      *
      * Helper method to create a cache tag for the related model. General format
-     * is {class}-{id}(-{suffx})? (e.g. App\Models\Users-18, App\Models\Users-10-posts)
+     * is {model}-{id}(-{suffx})? (e.g. App\Models\Users-18, App\Models\Users-10-posts)
      * @param  string $base   Base tag
      * @param  int    $oid    Object ID
      * @param  string $suffix Additional text to inject into tag
@@ -226,7 +243,8 @@ abstract class Repository implements PresentableInterface
      */
     public function __get($var)
     {
-        return $this->object->$var;
+        $getter = 'get' . ucfirst($var);
+        return (method_exists($this, $getter)) ? $this->$getter() : $this->object->$var;
     }
 
     /**
@@ -237,6 +255,12 @@ abstract class Repository implements PresentableInterface
      */
     public function __set($var, $val)
     {
-        $this->object->$var = $val;
+        $setter = 'get' . ucfirst($var);
+
+        if (method_exists($this, $setter)) {
+            $this->$setter($val);
+        } else {
+            $this->object->$var = $val;
+        }
     }
 }

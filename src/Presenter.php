@@ -8,16 +8,16 @@ use Robbo\Presenter\Presenter as BasePresenter;
 class Presenter extends BasePresenter
 {
     /**
-     * Namespaced name of the repository to load
+     * Namespaced class of the repository to load
      * @var string
      */
-    protected $repository_class = null;
+    protected static $repository = null;
 
     /**
      * Model Repository
      * @var C4tech\Foundation\Repository
      */
-    protected $repository_instance = null;
+    protected $instance = null;
 
     /**
      * Present Repository
@@ -26,24 +26,24 @@ class Presenter extends BasePresenter
      * repository as necessary.
      * @return C4tech\Foundation\Repository A Repository if it exists
      */
-    public function presentRepository()
+    public function presentRepo()
     {
-        if (is_null($this->repository_instance)) {
-            $this->repository_instance = $this->setRepository();
+        if (is_null($this->instance)) {
+            $this->instance = $this->setRepository();
         }
 
-        return $this->repository_instance;
+        return $this->instance;
     }
 
     /**
      * Set Repository
      *
-     * An overloadable method to construct the repository.
-     * @return C4tech\Foundation\Repository A Repository if it is defined.
+     * An overridable method to construct the repository.
+     * @return C4tech\Support\Repository
      */
     protected function setRepository()
     {
-        if ($class = $this->repository_class) {
+        if ($class = static::$repository) {
             return new $class($this->object);
         }
     }
