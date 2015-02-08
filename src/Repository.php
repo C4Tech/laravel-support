@@ -114,18 +114,31 @@ abstract class Repository implements PresentableInterface
      */
     public function __construct(Model $model = null)
     {
-        $this->object = $this->ensureModel($model);
+        $this->object = $this->pullModel($model);
         $this->pushCache();
     }
 
-    protected function ensureModel(Model $model = null)
+    /**
+     * Pull Model
+     *
+     * Ensure that the underlying object is a Model.
+     * @param  Model $model Model provided to constructor.
+     * @return Model
+     */
+    protected function pullModel(Model &$model = null)
     {
         return (!is_null($model)) ? $model : new static::$model;
     }
 
+    /**
+     * Push Cache
+     *
+     * Ensure the instance is stored in memory
+     * @return void
+     */
     protected function pushCache()
     {
-        $key = $this->getTags();
+        $key = array_shift($this->getTags());
         if ($this->object->exists && !isset(static::$instances[$key])) {
             static::$instances[$key] = $this;
         }
@@ -153,7 +166,7 @@ abstract class Repository implements PresentableInterface
     {
         $model = static::$model;
         Log::debug('Creating new Model', ['model' => $model, 'data' => $data]);
-        return new static($model::create($data));
+        return $this->make($model::create($data));
     }
 
     /**
@@ -261,7 +274,7 @@ abstract class Repository implements PresentableInterface
      */
     public function __set($var, $val)
     {
-        $setter = 'get' . ucfirst($var);
+        $setter = 'set' . ucfirst($var);
 
         if (method_exists($this, $setter)) {
             $this->$setter($val);
