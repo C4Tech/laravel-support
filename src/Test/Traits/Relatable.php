@@ -6,11 +6,6 @@ use Codeception\Verify;
 trait Relatable
 {
     /**
-     * Consume the Modelable trait
-     */
-    use Modelable;
-
-    /**
      * Verify BelongsTo
      *
      * Common test to ensure relationship method returns a BelongTo.

@@ -21,13 +21,20 @@ trait Modelable
      */
     protected function setModel($model)
     {
-        if ($model instanceof Model) {
-            $this->model = $model;
-        } elseif (class_exists($model)) {
-            $this->model = new $model;
+        if (is_object($model)) {
+            if ($model instanceof Model) {
+                $this->model = $model;
+            } else {
+                expect($model instanceof Model)->true();
+            }
+        } elseif (is_string($model)) {
+            if (class_exists($model)) {
+                $this->model = new $model;
+            } else {
+                expect(class_exists($model))->true();
+            }
         } else {
-            expect(class_exists($model))->true();
-            expect($model instanceof Model)->true();
+            expect(false, 'is a Model')->true();
         }
     }
 

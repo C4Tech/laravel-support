@@ -3,7 +3,7 @@
 use Mockery;
 use PHPUnit_Framework_TestCase as TestCase;
 use Codeception\Verify;
-use C4tech\Test\Support\Traits\Reflectable;
+use C4tech\Support\Test\Traits\Reflectable;
 
 class Base extends TestCase
 {

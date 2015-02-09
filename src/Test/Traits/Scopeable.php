@@ -6,11 +6,6 @@ use Codeception\Verify;
 trait Scopeable
 {
     /**
-     * Consume the Modelable trait
-     */
-    use Modelable;
-
-    /**
      * Get Query Mock
      *
      * Creates a new mocked query object.
