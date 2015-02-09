@@ -15,6 +15,11 @@ class DateFilterTest extends TestCase
             ->shouldAllowMockingProtectedMethods();
     }
 
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
     protected function verifyScopeStatement($method, $when, $comp = '=')
     {
         $query = true;

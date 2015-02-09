@@ -11,4 +11,12 @@ class Base extends TestCase
      * Consume Reflectable Trait
      */
     use Reflectable;
+
+    /**
+     * @codeCoverageIgnore
+    */
+    public function tearDown()
+    {
+        Mockery::close();
+    }
 }

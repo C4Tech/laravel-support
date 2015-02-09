@@ -19,6 +19,11 @@ class PresenterTest extends TestCase
             ->shouldAllowMockingProtectedMethods();
     }
 
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
     public function testPresentRepoNull()
     {
         $this->presenter->shouldReceive('setRepository')

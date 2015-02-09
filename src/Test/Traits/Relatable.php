@@ -173,22 +173,10 @@ trait Relatable
      * @param  array  $args     Arguments to test
      * @return void
      */
-    private function verifyRelationship($relation, $args)
+    protected function verifyRelationship($relation, $args)
     {
         $count = count($args);
         switch ($count) {
-            case 7:
-                $this->verifyRelationshipSix(
-                    $args[0],
-                    $relation,
-                    $args[1],
-                    $args[2],
-                    $args[3],
-                    $args[4],
-                    $args[5],
-                    $args[6]
-                );
-                break;
             case 6:
                 $this->verifyRelationshipFive($args[0], $relation, $args[1], $args[2], $args[3], $args[4], $args[5]);
                 break;
@@ -208,10 +196,11 @@ trait Relatable
                 $this->verifyRelationshipZero($args[0], $relation);
                 break;
             default:
-                expect($count)->greaterOrEquals(1);
-                expect($count)->lessOrEquals(7);
                 break;
         }
+
+        expect($count)->greaterOrEquals(1);
+        expect($count)->lessOrEquals(6);
     }
 
     /**
@@ -222,7 +211,7 @@ trait Relatable
      * @param  array  $args     Arguments to test
      * @return void
      */
-    private function verifyRelationshipZero($method, $relation)
+    protected function verifyRelationshipZero($method, $relation)
     {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
@@ -241,7 +230,7 @@ trait Relatable
      * @param  mixed  $param_a  A parameter
      * @return void
      */
-    private function verifyRelationshipOne($method, $relation, $param_a)
+    protected function verifyRelationshipOne($method, $relation, $param_a)
     {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
@@ -261,7 +250,7 @@ trait Relatable
      * @param  mixed  $param_b  A parameter
      * @return void
      */
-    private function verifyRelationshipTwo($method, $relation, $param_a, $param_b)
+    protected function verifyRelationshipTwo($method, $relation, $param_a, $param_b)
     {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
@@ -282,7 +271,7 @@ trait Relatable
      * @param  mixed  $param_c  A parameter
      * @return void
      */
-    private function verifyRelationshipThree(
+    protected function verifyRelationshipThree(
         $method,
         $relation,
         $param_a,
@@ -309,7 +298,7 @@ trait Relatable
      * @param  mixed  $param_d  A parameter
      * @return void
      */
-    private function verifyRelationshipFour(
+    protected function verifyRelationshipFour(
         $method,
         $relation,
         $param_a,
@@ -338,7 +327,7 @@ trait Relatable
      * @param  mixed  $param_e  A parameter
      * @return void
      */
-    private function verifyRelationshipFive(
+    protected function verifyRelationshipFive(
         $method,
         $relation,
         $param_a,
@@ -350,38 +339,6 @@ trait Relatable
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c, $param_d, $param_e)
-            ->once()
-            ->andReturn(true);
-        expect($model->$method())->true();
-    }
-
-    /**
-     * Verify Relationship Six
-     *
-     * Test when relationship method expects six parameters.
-     * @param  string $relation Type of Relationship method is called
-     * @param  array  $args     Arguments to test
-     * @param  mixed  $param_a  A parameter
-     * @param  mixed  $param_b  A parameter
-     * @param  mixed  $param_c  A parameter
-     * @param  mixed  $param_d  A parameter
-     * @param  mixed  $param_e  A parameter
-     * @param  mixed  $param_f  A parameter
-     * @return void
-     */
-    private function verifyRelationshipSix(
-        $method,
-        $relation,
-        $param_a,
-        $param_b,
-        $param_c,
-        $param_d,
-        $param_e,
-        $param_f
-    ) {
-        $model = $this->getModelMock();
-        $model->shouldReceive($relation)
-            ->with($param_a, $param_b, $param_c, $param_d, $param_e, $param_f)
             ->once()
             ->andReturn(true);
         expect($model->$method())->true();

@@ -16,6 +16,11 @@ class ModelableTest extends TestCase
             ->shouldAllowMockingProtectedMethods();
     }
 
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
     protected function getMethod($method)
     {
         $reflection = new ReflectionClass($this->trait);

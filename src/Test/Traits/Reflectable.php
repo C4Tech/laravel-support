@@ -5,7 +5,7 @@ use stdClass;
 
 trait Reflectable
 {
-    protected function getReflection(stdClass &$object)
+    protected function getReflection(&$object)
     {
         return new ReflectionClass($object);
     }
@@ -17,7 +17,7 @@ trait Reflectable
      * @param  string   $method The method name to retrieve
      * @return ReflectionMethod An invoke-able method
      */
-    protected function getMethod(stdClass &$object, $method)
+    protected function getMethod(&$object, $method)
     {
         $reflection = $this->getReflection($object);
         $property = $reflection->getMethod($method);
@@ -31,7 +31,7 @@ trait Reflectable
      * @param  string   $property The property to retrieve
      * @return ReflectionProperty A publicly accessible property
      */
-    protected function getProperty(stdClass &$object, $property)
+    protected function getProperty(&$object, $property)
     {
         $reflection = $this->getReflection($object);
         $property = $reflection->getProperty($property);
@@ -45,7 +45,7 @@ trait Reflectable
      * @param  string   $property The property to retrieve
      * @return mixed              The current value for the property
      */
-    protected function getPropertyValue(stdClass &$object, $property)
+    protected function getPropertyValue(&$object, $property)
     {
         $property = $this->getProperty($object, $property);
         return $property->getValue($object);

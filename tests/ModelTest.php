@@ -15,6 +15,11 @@ class ModelTest extends TestCase
             ->shouldAllowMockingProtectedMethods();
     }
 
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
     public function testGetDates()
     {
         $dates = $this->model->getDates();

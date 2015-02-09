@@ -11,7 +11,7 @@ trait Scopeable
      * Creates a new mocked query object.
      * @return \Mockery\MockInterface
      */
-    private function getQueryMock()
+    protected function getQueryMock()
     {
         return Mockery::mock('stdClass')->makePartial();
     }
@@ -38,7 +38,7 @@ trait Scopeable
         if (count($args) > 4) {
             expect($this->model->$method($query, $args[4]))->true();
         } else {
-            expect($this->model->$method($query))->true();
+            expect($this->model->$method($query, $right))->true();
         }
     }
 }

@@ -25,6 +25,7 @@ class ControllerTest extends TestCase
 
     public function tearDown()
     {
+        Mockery::close();
         Log::clearResolvedInstances();
         Request::clearResolvedInstances();
         View::clearResolvedInstances();
