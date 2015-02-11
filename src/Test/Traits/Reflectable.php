@@ -50,4 +50,19 @@ trait Reflectable
         $property = $this->getProperty($object, $property);
         return $property->getValue($object);
     }
+
+    /**
+     * set Property Value
+     * @param  stdClass $object   The object on which the property is defined
+     * @param  string   $property The property to retrieve
+     * @param  mixed    $value    The value of the property to set
+     * @param  boolean  $static   Whether this property is static or not
+     * @return void
+     */
+    protected function setPropertyValue(&$object, $property, $value, $static = false)
+    {
+        $property = $this->getProperty($object, $property);
+        $class = ($static) ? $object : null;
+        $property->setValue($class, $value);
+    }
 }

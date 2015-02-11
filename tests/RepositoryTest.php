@@ -107,21 +107,22 @@ class RepositoryTest extends TestCase
             ->with(
                 Mockery::on(function ($method) use ($model) {
                     $method($model);
+                    return true;
                 })
             );
 
         Config::shouldReceive('get')
             ->with('app.debug')
-            ->times(3)
+            ->twice()
             ->andReturn(true);
         Log::shouldReceive('info')
             ->with(Mockery::type('string'), ['model' => $model])
             ->once();
         Log::shouldReceive('debug')
             ->with(Mockery::type('string'), ['tag' => $tag])
-            ->twice();
+            ->once();
         Cache::shouldReceive('tags->flush')
-            ->twice();
+            ->once();
 
         $this->repo->shouldReceive('formatTag')
             ->with($model->id, 'object')

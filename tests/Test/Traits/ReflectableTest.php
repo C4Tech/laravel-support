@@ -60,4 +60,28 @@ class ReflectableTest extends TestCase
         $value = $method->invokeArgs($this->trait, [&$this->trait->object, $property_name]);
         expect($value)->equals($property_value);
     }
+
+    public function testSetPropertyValueInstance()
+    {
+        $property_name = 'unguarded';
+        $property_value = true;
+        $setter = $this->getMethod('setPropertyValue');
+        $setter->invokeArgs($this->trait, [&$this->trait->object, $property_name, $property_value]);
+
+        $getter = $this->getMethod('getPropertyValue');
+        $value = $getter->invokeArgs($this->trait, [&$this->trait->object, $property_name]);
+        expect($value)->equals($property_value);
+    }
+
+    public function testSetPropertyValueStatic()
+    {
+        $property_name = 'snakeAttributes';
+        $property_value = false;
+        $setter = $this->getMethod('setPropertyValue');
+        $setter->invokeArgs($this->trait, [&$this->trait->object, $property_name, $property_value, true]);
+
+        $getter = $this->getMethod('getPropertyValue');
+        $value = $getter->invokeArgs($this->trait, [&$this->trait->object, $property_name]);
+        expect($value)->equals($property_value);
+    }
 }
