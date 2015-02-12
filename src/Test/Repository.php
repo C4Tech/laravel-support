@@ -20,7 +20,6 @@ abstract class Repository extends Base
             ->makePartial();
 
         $this->mocked_model = $this->getModelMock();
-        $property = $this->getProperty($this->repo, 'object');
-        $property->setValue($this->repo, $this->mocked_model);
+        $this->setPropertyValue($this->repo, 'object', $this->mocked_model);
     }
 }

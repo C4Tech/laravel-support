@@ -62,7 +62,7 @@ trait Reflectable
     protected function setPropertyValue(&$object, $property, $value, $static = false)
     {
         $property = $this->getProperty($object, $property);
-        $class = ($static) ? $object : null;
+        $class = ($static) ? null : $object;
         $property->setValue($class, $value);
     }
 }
