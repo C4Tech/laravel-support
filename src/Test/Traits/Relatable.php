@@ -230,14 +230,15 @@ trait Relatable
      */
     protected function verifyRelationshipZero($method, $relation, callable $callback = null)
     {
+        $return = (!$callback) ? true : Mockery::mock('stdClass');
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->withNoArgs()
             ->once()
-            ->andReturn(true);
+            ->andReturn($return);
 
         if ($callback) {
-            $callback($model, $method);
+            $callback($model, $return, $method);
         } else {
             expect($model->$method())->true();
         }
@@ -254,14 +255,15 @@ trait Relatable
      */
     protected function verifyRelationshipOne($method, $relation, $param_a, callable $callback = null)
     {
+        $return = (!$callback) ? true : Mockery::mock('stdClass');
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a)
             ->once()
-            ->andReturn(true);
+            ->andReturn($return);
 
         if ($callback) {
-            $callback($model, $method);
+            $callback($model, $return, $method);
         } else {
             expect($model->$method())->true();
         }
@@ -279,14 +281,15 @@ trait Relatable
      */
     protected function verifyRelationshipTwo($method, $relation, $param_a, $param_b, callable $callback = null)
     {
+        $return = (!$callback) ? true : Mockery::mock('stdClass');
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b)
             ->once()
-            ->andReturn(true);
+            ->andReturn($return);
 
         if ($callback) {
-            $callback($model, $method);
+            $callback($model, $return, $method);
         } else {
             expect($model->$method())->true();
         }
@@ -311,14 +314,15 @@ trait Relatable
         $param_c,
         callable $callback = null
     ) {
+        $return = (!$callback) ? true : Mockery::mock('stdClass');
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c)
             ->once()
-            ->andReturn(true);
+            ->andReturn($return);
 
         if ($callback) {
-            $callback($model, $method);
+            $callback($model, $return, $method);
         } else {
             expect($model->$method())->true();
         }
@@ -345,14 +349,15 @@ trait Relatable
         $param_d,
         callable $callback = null
     ) {
+        $return = (!$callback) ? true : Mockery::mock('stdClass');
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c, $param_d)
             ->once()
-            ->andReturn(true);
+            ->andReturn($return);
 
         if ($callback) {
-            $callback($model, $method);
+            $callback($model, $return, $method);
         } else {
             expect($model->$method())->true();
         }
@@ -381,14 +386,15 @@ trait Relatable
         $param_e,
         callable $callback = null
     ) {
+        $return = (!$callback) ? true : Mockery::mock('stdClass');
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c, $param_d, $param_e)
             ->once()
-            ->andReturn(true);
+            ->andReturn($return);
 
         if ($callback) {
-            $callback($model, $method);
+            $callback($model, $return, $method);
         } else {
             expect($model->$method())->true();
         }
