@@ -175,25 +175,42 @@ trait Relatable
      */
     protected function verifyRelationship($relation, $args)
     {
+        $raw_count = count($args);
+        $callback = array_pop($args);
         $count = count($args);
+        if ($raw_count && !is_callable($callback)) {
+            $args[] = $callback;
+            $callback = null;
+            $count++;
+        }
+
         switch ($count) {
             case 6:
-                $this->verifyRelationshipFive($args[0], $relation, $args[1], $args[2], $args[3], $args[4], $args[5]);
+                $this->verifyRelationshipFive(
+                    $args[0],
+                    $relation,
+                    $args[1],
+                    $args[2],
+                    $args[3],
+                    $args[4],
+                    $args[5],
+                    $callback
+                );
                 break;
             case 5:
-                $this->verifyRelationshipFour($args[0], $relation, $args[1], $args[2], $args[3], $args[4]);
+                $this->verifyRelationshipFour($args[0], $relation, $args[1], $args[2], $args[3], $args[4], $callback);
                 break;
             case 4:
-                $this->verifyRelationshipThree($args[0], $relation, $args[1], $args[2], $args[3]);
+                $this->verifyRelationshipThree($args[0], $relation, $args[1], $args[2], $args[3], $callback);
                 break;
             case 3:
-                $this->verifyRelationshipTwo($args[0], $relation, $args[1], $args[2]);
+                $this->verifyRelationshipTwo($args[0], $relation, $args[1], $args[2], $callback);
                 break;
             case 2:
-                $this->verifyRelationshipOne($args[0], $relation, $args[1]);
+                $this->verifyRelationshipOne($args[0], $relation, $args[1], $callback);
                 break;
             case 1:
-                $this->verifyRelationshipZero($args[0], $relation);
+                $this->verifyRelationshipZero($args[0], $relation, $callback);
                 break;
             default:
                 break;
@@ -211,13 +228,18 @@ trait Relatable
      * @param  array  $args     Arguments to test
      * @return void
      */
-    protected function verifyRelationshipZero($method, $relation)
+    protected function verifyRelationshipZero($method, $relation, callable $callback = null)
     {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->withNoArgs()
             ->once()
             ->andReturn(true);
+
+        if ($callback) {
+            $callback($model);
+        }
+
         expect($model->$method())->true();
     }
 
@@ -230,13 +252,18 @@ trait Relatable
      * @param  mixed  $param_a  A parameter
      * @return void
      */
-    protected function verifyRelationshipOne($method, $relation, $param_a)
+    protected function verifyRelationshipOne($method, $relation, $param_a, callable $callback = null)
     {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a)
             ->once()
             ->andReturn(true);
+
+        if ($callback) {
+            $callback($model);
+        }
+
         expect($model->$method())->true();
     }
 
@@ -250,13 +277,18 @@ trait Relatable
      * @param  mixed  $param_b  A parameter
      * @return void
      */
-    protected function verifyRelationshipTwo($method, $relation, $param_a, $param_b)
+    protected function verifyRelationshipTwo($method, $relation, $param_a, $param_b, callable $callback = null)
     {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b)
             ->once()
             ->andReturn(true);
+
+        if ($callback) {
+            $callback($model);
+        }
+
         expect($model->$method())->true();
     }
 
@@ -276,13 +308,19 @@ trait Relatable
         $relation,
         $param_a,
         $param_b,
-        $param_c
+        $param_c,
+        callable $callback = null
     ) {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c)
             ->once()
             ->andReturn(true);
+
+        if ($callback) {
+            $callback($model);
+        }
+
         expect($model->$method())->true();
     }
 
@@ -304,13 +342,19 @@ trait Relatable
         $param_a,
         $param_b,
         $param_c,
-        $param_d
+        $param_d,
+        callable $callback = null
     ) {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c, $param_d)
             ->once()
             ->andReturn(true);
+
+        if ($callback) {
+            $callback($model);
+        }
+
         expect($model->$method())->true();
     }
 
@@ -334,13 +378,19 @@ trait Relatable
         $param_b,
         $param_c,
         $param_d,
-        $param_e
+        $param_e,
+        callable $callback = null
     ) {
         $model = $this->getModelMock();
         $model->shouldReceive($relation)
             ->with($param_a, $param_b, $param_c, $param_d, $param_e)
             ->once()
             ->andReturn(true);
+
+        if ($callback) {
+            $callback($model);
+        }
+
         expect($model->$method())->true();
     }
 }

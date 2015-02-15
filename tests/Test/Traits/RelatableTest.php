@@ -55,6 +55,25 @@ class RelatableTest extends TestCase
         expect_not($method->invokeArgs($this->trait, $args));
     }
 
+    protected function verifyRelationshipCallCallback($method, $model_method, $relation, $params = [])
+    {
+        $model = Mockery::mock('C4tech\Test\Support\Test\Traits\MockModel')
+            ->makePartial();
+        $this->trait->shouldReceive('getModelMock')
+            ->withNoArgs()
+            ->once()
+            ->andReturn($model);
+
+        $method = $this->getMethod($method);
+        $args = [$model_method, $relation];
+        $args = array_merge($args, $params);
+        $args[] = function ($mock) {
+            expect($mock instanceof MockInterface)->true();
+        };
+
+        expect_not($method->invokeArgs($this->trait, $args));
+    }
+
     public function testBelongsTo()
     {
         $this->verifyCallToRelationship('verifyBelongsTo', 'belongsTo');
@@ -111,27 +130,27 @@ class RelatableTest extends TestCase
         $method = $this->getMethod('verifyRelationship');
 
         $this->trait->shouldReceive('verifyRelationshipFive')
-            ->with(1, $relation, 2, 3, 4, 5, 6)
+            ->with(1, $relation, 2, 3, 4, 5, 6, null)
             ->once()
             ->andReturn(true);
         $this->trait->shouldReceive('verifyRelationshipFour')
-            ->with(1, $relation, 2, 3, 4, 5)
+            ->with(1, $relation, 2, 3, 4, 5, null)
             ->once()
             ->andReturn(true);
         $this->trait->shouldReceive('verifyRelationshipThree')
-            ->with(1, $relation, 2, 3, 4)
+            ->with(1, $relation, 2, 3, 4, null)
             ->once()
             ->andReturn(true);
         $this->trait->shouldReceive('verifyRelationshipTwo')
-            ->with(1, $relation, 2, 3)
+            ->with(1, $relation, 2, 3, null)
             ->once()
             ->andReturn(true);
         $this->trait->shouldReceive('verifyRelationshipOne')
-            ->with(1, $relation, 2)
+            ->with(1, $relation, 2, null)
             ->once()
             ->andReturn(true);
         $this->trait->shouldReceive('verifyRelationshipZero')
-            ->with(1, $relation)
+            ->with(1, $relation, null)
             ->once()
             ->andReturn(true);
 
@@ -193,6 +212,51 @@ class RelatableTest extends TestCase
     public function testRelationshipFive()
     {
         $this->verifyRelationshipCall(
+            'verifyRelationshipFive',
+            'photo',
+            'morphOne',
+            ['User', 'imageable', 'imageable_type', 'imageable_id', 'id']
+        );
+    }
+
+    public function testRelationshipZeroCallback()
+    {
+        $this->verifyRelationshipCallCallback('verifyRelationshipZero', 'thing', 'morphTo');
+    }
+
+    public function testRelationshipOneCallback()
+    {
+        $this->verifyRelationshipCallCallback('verifyRelationshipOne', 'owner', 'hasOne', ['User']);
+    }
+
+    public function testRelationshipTwoCallback()
+    {
+        $this->verifyRelationshipCallCallback('verifyRelationshipTwo', 'photos', 'hasMany', ['Photo', 'photo_id']);
+    }
+
+    public function testRelationshipThreeCallback()
+    {
+        $this->verifyRelationshipCallCallback(
+            'verifyRelationshipThree',
+            'users',
+            'belongsTo',
+            ['User', 'user_id', 'id']
+        );
+    }
+
+    public function testRelationshipFourCallback()
+    {
+        $this->verifyRelationshipCallCallback(
+            'verifyRelationshipFour',
+            'posts',
+            'hasManyThrough',
+            ['Post', 'User', 'model_id', 'post_id']
+        );
+    }
+
+    public function testRelationshipFiveCallback()
+    {
+        $this->verifyRelationshipCallCallback(
             'verifyRelationshipFive',
             'photo',
             'morphOne',
