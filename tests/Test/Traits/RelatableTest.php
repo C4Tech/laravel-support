@@ -67,8 +67,9 @@ class RelatableTest extends TestCase
         $method = $this->getMethod($method);
         $args = [$model_method, $relation];
         $args = array_merge($args, $params);
-        $args[] = function ($mock) {
+        $args[] = function ($mock, $caller) {
             expect($mock instanceof MockInterface)->true();
+            expect($mock->$caller())->true();
         };
 
         expect_not($method->invokeArgs($this->trait, $args));

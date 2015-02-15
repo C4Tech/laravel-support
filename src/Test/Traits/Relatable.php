@@ -237,10 +237,10 @@ trait Relatable
             ->andReturn(true);
 
         if ($callback) {
-            $callback($model);
+            $callback($model, $method);
+        } else {
+            expect($model->$method())->true();
         }
-
-        expect($model->$method())->true();
     }
 
     /**
@@ -261,10 +261,10 @@ trait Relatable
             ->andReturn(true);
 
         if ($callback) {
-            $callback($model);
+            $callback($model, $method);
+        } else {
+            expect($model->$method())->true();
         }
-
-        expect($model->$method())->true();
     }
 
     /**
@@ -286,10 +286,10 @@ trait Relatable
             ->andReturn(true);
 
         if ($callback) {
-            $callback($model);
+            $callback($model, $method);
+        } else {
+            expect($model->$method())->true();
         }
-
-        expect($model->$method())->true();
     }
 
     /**
@@ -318,10 +318,10 @@ trait Relatable
             ->andReturn(true);
 
         if ($callback) {
-            $callback($model);
+            $callback($model, $method);
+        } else {
+            expect($model->$method())->true();
         }
-
-        expect($model->$method())->true();
     }
 
     /**
@@ -352,10 +352,10 @@ trait Relatable
             ->andReturn(true);
 
         if ($callback) {
-            $callback($model);
+            $callback($model, $method);
+        } else {
+            expect($model->$method())->true();
         }
-
-        expect($model->$method())->true();
     }
 
     /**
@@ -388,9 +388,9 @@ trait Relatable
             ->andReturn(true);
 
         if ($callback) {
-            $callback($model);
+            $callback($model, $method);
+        } else {
+            expect($model->$method())->true();
         }
-
-        expect($model->$method())->true();
     }
 }
