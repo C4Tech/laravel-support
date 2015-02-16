@@ -1,6 +1,7 @@
 <?php namespace C4tech\Test\Support;
 
 use Codeception\Verify;
+use Illuminate\Support\Facades\Config;
 use Mockery;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
@@ -21,6 +22,7 @@ class PresenterTest extends TestCase
 
     public function tearDown()
     {
+        Config::clearResolvedInstances();
         Mockery::close();
     }
 
@@ -46,17 +48,20 @@ class PresenterTest extends TestCase
 
     public function testSetRepositoryNull()
     {
+        Config::shouldReceive('get')
+            ->once()
+            ->andReturn(null);
+
         expect_not($this->presenter->setRepository());
     }
 
     public function testSetRepositoryValue()
     {
         $class = 'stdClass';
-
-        $reflection = new ReflectionClass($this->presenter);
-        $property = $reflection->getProperty('repository');
-        $property->setAccessible(true);
-        $property->setValue($this->presenter, $class);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($class);
 
         $repo = $this->presenter->setRepository();
         expect(get_class($repo))->equals($class);

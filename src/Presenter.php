@@ -1,5 +1,6 @@
 <?php namespace C4tech\Support;
 
+use Illuminate\Support\Facades\Config;
 use Robbo\Presenter\Presenter as BasePresenter;
 
 /**
@@ -43,7 +44,7 @@ class Presenter extends BasePresenter
      */
     protected function setRepository()
     {
-        if ($class = static::$repository) {
+        if ($class = Config::get(static::$repository, static::$repository)) {
             return new $class($this->object);
         }
     }

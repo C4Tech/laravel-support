@@ -1,5 +1,7 @@
 <?php namespace C4tech\Support\Traits;
 
+use Illuminate\Support\Facades\Config;
+
 /**
  * Presentable
  *
@@ -21,7 +23,7 @@ trait Presentable
      */
     public function getPresenter()
     {
-        $class = static::$presenter ?: 'C4tech\Support\Presenter';
+        $class = Config::get(static::$presenter, 'C4tech\Support\Presenter');
         return new $class($this);
     }
 }

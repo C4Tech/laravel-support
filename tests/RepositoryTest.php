@@ -32,6 +32,11 @@ class RepositoryTest extends TestCase
 
     public function testBootNull()
     {
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn(null);
+
         expect_not($this->repo->boot());
     }
 
@@ -48,13 +53,14 @@ class RepositoryTest extends TestCase
             ->with('app.debug')
             ->once()
             ->andReturn(false);
+
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
+
         Log::shouldReceive('info')
             ->never();
-
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($this->repo, $model);
 
         expect_not($this->repo->boot());
     }
@@ -75,21 +81,21 @@ class RepositoryTest extends TestCase
             ->once();
 
         Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
+
+        Config::shouldReceive('get')
             ->with('app.debug')
             ->once()
             ->andReturn(true);
         Log::shouldReceive('info')
-            ->with(Mockery::type('string'), ['model' => $model])
+            ->with(Mockery::type('string'), Mockery::type('array'))
             ->once();
 
         $this->repo->shouldReceive('formatTag')
             ->with($model->id, 'object')
             ->andReturn($tag);
-
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
 
         expect_not($this->repo->boot());
     }
@@ -112,14 +118,19 @@ class RepositoryTest extends TestCase
             );
 
         Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
+
+        Config::shouldReceive('get')
             ->with('app.debug')
             ->twice()
             ->andReturn(true);
         Log::shouldReceive('info')
-            ->with(Mockery::type('string'), ['model' => $model])
+            ->with(Mockery::type('string'), Mockery::type('array'))
             ->once();
         Log::shouldReceive('debug')
-            ->with(Mockery::type('string'), ['tag' => $tag])
+            ->with(Mockery::type('string'), Mockery::type('array'))
             ->once();
         Cache::shouldReceive('tags->flush')
             ->once();
@@ -127,11 +138,6 @@ class RepositoryTest extends TestCase
         $this->repo->shouldReceive('formatTag')
             ->with($model->id, 'object')
             ->andReturn($tag);
-
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
 
         expect_not($this->repo->boot());
     }
@@ -162,10 +168,10 @@ class RepositoryTest extends TestCase
         $model->shouldReceive('query->cacheTags->remember')
             ->andReturn($query);
 
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
         expect_not($this->repo->find($object_id));
     }
@@ -196,11 +202,12 @@ class RepositoryTest extends TestCase
         $model->shouldReceive('query->cacheTags->remember')
             ->andReturn($query);
 
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
+        $reflection = new ReflectionClass($this->repo);
         $property = $reflection->getProperty('instances');
         $property->setAccessible(true);
         $instances = $property->getValue();
@@ -240,10 +247,10 @@ class RepositoryTest extends TestCase
         $model->shouldReceive('query->cacheTags->remember')
             ->andReturn($query);
 
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
         $this->repo->shouldReceive('make')
             ->with($object)
@@ -295,23 +302,30 @@ class RepositoryTest extends TestCase
 
     public function testPullModelNull()
     {
+        $model = 'stdClass';
         $reflection = new ReflectionClass($this->repo);
 
-        $object_property = $reflection->getProperty('model');
-        $object_property->setAccessible(true);
-        $object_property->setValue('stdClass');
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
         $method = $reflection->getMethod('pullModel');
         $method->setAccessible(true);
 
         $results = $method->invoke($this->repo);
-        expect(get_class($results))->equals('stdClass');
+        expect(get_class($results))->equals($model);
     }
 
     public function testPullModelGiven()
     {
         $object = Mockery::mock('C4tech\Support\Model');
         $object->exists = true;
+
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn(null);
 
         $reflection = new ReflectionClass($this->repo);
 
@@ -357,6 +371,12 @@ class RepositoryTest extends TestCase
     {
         $mock = new Model;
         $mock->id = 14;
+        $model = 'C4tech\Support\Model';
+
+        Config::shouldReceive('get')
+            ->with($model, $model)
+            ->times(4)
+            ->andReturn($model);
 
         $repo = new MockRepository();
         $new = $repo->make($mock);
@@ -376,19 +396,14 @@ class RepositoryTest extends TestCase
             ->andReturn($model_instance)
             ->getMock();
 
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
         Log::shouldReceive('debug')
-            ->with(
-                Mockery::type('string'),
-                [
-                    'model' => $model,
-                    'data' => $data
-                ]
-            )->once();
+            ->with(Mockery::type('string'), Mockery::type('array'))
+            ->once();
 
         $this->repo->shouldReceive('make')
             ->with($model_instance)
@@ -411,24 +426,19 @@ class RepositoryTest extends TestCase
             ->getMock();
         $object->id = 10;
 
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
+        $reflection = new ReflectionClass($this->repo);
         $instance = $reflection->getProperty('object');
         $instance->setAccessible(true);
         $instance->setValue($this->repo, $object);
 
         Log::shouldReceive('debug')
-            ->with(
-                Mockery::type('string'),
-                [
-                    'model' => $model,
-                    'id' => $object->id,
-                    'data' => $data
-                ]
-            )->once();
+            ->with(Mockery::type('string'), Mockery::type('array'))
+            ->once();
 
         expect($this->repo->update($data))->true();
     }
@@ -499,10 +509,10 @@ class RepositoryTest extends TestCase
         $oid = 5;
         $suffix = 'magic';
 
-        $reflection = new ReflectionClass($this->repo);
-        $property = $reflection->getProperty('model');
-        $property->setAccessible(true);
-        $property->setValue($model);
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
 
         $this->repo->shouldReceive('buildTag')
             ->with($model, $oid, $suffix)
@@ -573,6 +583,12 @@ class RepositoryTest extends TestCase
     {
         $mock = new Model;
         $mock->id = 14;
+        $model = 'C4tech\Support\Model';
+
+        Config::shouldReceive('get')
+            ->with($model, $model)
+            ->twice()
+            ->andReturn($model);
 
         $value = true;
         $repo = new MockRepository($mock);
@@ -596,9 +612,7 @@ class RepositoryTest extends TestCase
         $property->setValue($this->repo, $object);
 
         $this->repo->test = true;
-
         $model = $property->getValue($this->repo);
-
         expect($model->test)->true();
     }
 }

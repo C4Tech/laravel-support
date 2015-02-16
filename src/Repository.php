@@ -52,9 +52,7 @@ abstract class Repository implements PresentableInterface
      */
     public function boot()
     {
-        $model = static::$model;
-
-        if (!$model) {
+        if (!($model = Config::get(static::$model, static::$model))) {
             return;
         }
 
@@ -89,7 +87,7 @@ abstract class Repository implements PresentableInterface
         $cache_key = $this->formatTag($object_id, 'object');
 
         if (!isset(static::$instances[$key]) || $force) {
-            $model = static::$model;
+            $model = Config::get(static::$model, static::$model);
             $query = $model::query()
                 ->cacheTags([$key, $cache_key])
                 ->remember(self::CACHE_LONG);
@@ -127,7 +125,8 @@ abstract class Repository implements PresentableInterface
      */
     protected function pullModel(Model &$model = null)
     {
-        return (!is_null($model)) ? $model : new static::$model;
+        $class = Config::get(static::$model, static::$model);
+        return (!is_null($model)) ? $model : new $class;
     }
 
     /**
@@ -164,9 +163,10 @@ abstract class Repository implements PresentableInterface
      */
     public function create($data = [])
     {
-        $model = static::$model;
+        $model = Config::get(static::$model, static::$model);
         Log::debug('Creating new Model', ['model' => $model, 'data' => $data]);
-        return $this->make($model::create($data));
+        $instance = $model::create($data);
+        return $this->make($instance);
     }
 
     /**
@@ -177,7 +177,14 @@ abstract class Repository implements PresentableInterface
      */
     public function update($data = [])
     {
-        Log::debug('Updating Model', ['model' => static::$model, 'id' => $this->object->id, 'data' => $data]);
+        Log::debug(
+            'Updating Model',
+            [
+                'model' => Config::get(static::$model, static::$model),
+                'id'    => $this->object->id,
+                'data'  => $data
+            ]
+        );
         return $this->object->update($data);
     }
 
@@ -230,7 +237,7 @@ abstract class Repository implements PresentableInterface
      */
     public function formatTag($oid, $suffix = null)
     {
-        return static::buildTag(static::$model, $oid, $suffix);
+        return static::buildTag(Config::get(static::$model, static::$model), $oid, $suffix);
     }
 
     /**

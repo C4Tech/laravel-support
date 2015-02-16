@@ -1,6 +1,7 @@
 <?php namespace C4tech\Test\Support\Test\Traits;
 
 use Codeception\Verify;
+use Illuminate\Support\Facades\Config;
 use Mockery;
 use PHPUnit_Framework_TestCase as TestCase;
 use ReflectionClass;
@@ -15,6 +16,7 @@ class PresentableTest extends TestCase
 
     public function tearDown()
     {
+        Config::clearResolvedInstances();
         Mockery::close();
     }
 

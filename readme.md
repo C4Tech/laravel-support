@@ -33,7 +33,8 @@ the deleted_at property into guarded and getDates.
 Our presenter provides access to the repository for the model so that there
 can be communication between presenter and repo in a more direct fashion. Just
 set the static `$repository` property on the presenter and access via the
-presentable `$this->repo` accessor.
+presentable `$this->repo` accessor. Note that the `$repository` property is
+expected to be a reference to a config item.
 
 ### Repository
 
@@ -43,6 +44,10 @@ relations. Anything not caught by the magic getter/setter method gets pushed
 back to the model, so model properties are directly accessible on repository
 instances. Additionally, the `boot()` method adds model event listeners to
 flush relevant caches on database changes.
+
+The property refering to the underlying model (static `$model`) is expected
+to be a reference to a config item. For backwards compatibility, defaults to
+that property value.
 
 
 
@@ -64,7 +69,8 @@ transforming data into/from JSON for the DB.
 ### Presentable
 
 Provides functionality to implement a presentable model without needing to
-define `getPresenter()` every time.
+define `getPresenter()` every time. Note that the `$presenter` static property
+is expected to be a reference to a config item.
 
 
 
