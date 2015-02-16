@@ -133,3 +133,9 @@ An exhaustive set of tests to verify model relationship methods.
 
 A trait for testing model queyr scope statements. Currently only handles scope
 statements that do simple `where()` statements.
+
+
+
+## Installation and setup
+
+1. Add `"c4tech/support": "1.x"` to your composer requirements and run `composer update`.
