@@ -1,5 +1,6 @@
 <?php namespace C4tech\Support;
 
+use C4tech\Support\Contracts\ModelInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -56,7 +57,7 @@ abstract class Repository implements PresentableInterface
             return;
         }
 
-        // Flush caches related to the campaign
+        // Flush caches related to the object
         if (Config::get('app.debug')) {
             Log::info('Binding cache flusher for model.', ['model' => $model]);
         }
@@ -108,9 +109,9 @@ abstract class Repository implements PresentableInterface
 
     /**
      * Constructor
-     * @param \C4tech\Support\Model $object The Model to wrap
+     * @param C4tech\Support\Contracts\ModelInterface $object The Model to wrap
      */
-    public function __construct(Model $model = null)
+    public function __construct(ModelInterface $model = null)
     {
         $this->object = $this->pullModel($model);
         $this->pushCache();
@@ -120,10 +121,10 @@ abstract class Repository implements PresentableInterface
      * Pull Model
      *
      * Ensure that the underlying object is a Model.
-     * @param  Model $model Model provided to constructor.
+     * @param  C4tech\Support\Contracts\ModelInterface $model Model provided to constructor.
      * @return Model
      */
-    protected function pullModel(Model &$model = null)
+    protected function pullModel(ModelInterface &$model = null)
     {
         $class = Config::get(static::$model, static::$model);
         return (!is_null($model)) ? $model : new $class;
@@ -147,10 +148,10 @@ abstract class Repository implements PresentableInterface
      * Make
      *
      * Create a new instance with a live Model.
-     * @param  \C4tech\Support\Model $object The Model to wrap
+     * @param  \C4tech\Support\Contracts\ModelInterface $object The Model to wrap
      * @return static
      */
-    public function make(Model $model)
+    public function make(ModelInterface $model)
     {
         return new static($model);
     }

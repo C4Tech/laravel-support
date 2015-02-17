@@ -1,14 +1,15 @@
 <?php namespace C4tech\Support;
 
-use Illuminate\Database\Eloquent\Model as BaseModel;
-use Robbo\Presenter\PresentableInterface;
+use C4tech\Support\Contracts\ModelInterface;
 use C4tech\Support\Traits\DateFilter;
 use C4tech\Support\Traits\Presentable;
+use Illuminate\Database\Eloquent\Model as BaseModel;
+use Robbo\Presenter\PresentableInterface;
 
 /**
  * A foundation Model with useful features.
  */
-class Model extends BaseModel implements PresentableInterface
+class Model extends BaseModel implements ModelInterface, PresentableInterface
 {
     /**
      * Consume the Presentable and DateFilter traits.
