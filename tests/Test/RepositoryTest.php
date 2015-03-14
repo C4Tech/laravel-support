@@ -70,4 +70,18 @@ class RepositoryTest extends TestCase
         $repo_model = $property->getValue($mocked_repo);
         expect($repo_model)->equals($mocked_model);
     }
+
+    public function testStubCreate()
+    {
+        $this->object->setRepository('C4tech\Support\Repository', 'C4tech\Support\Model');
+        $method = $this->getMethod('stubCreate');
+        $method->invoke($this->object);
+
+        // Ensure the repo is set
+        $property = $this->getProperty('repo');
+        $mocked_repo = $property->getValue($this->object);
+        expect($mocked_repo instanceof MockInterface)->true();
+
+        expect($mocked_repo->create())->true();
+    }
 }

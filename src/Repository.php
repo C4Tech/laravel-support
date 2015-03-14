@@ -33,12 +33,6 @@ abstract class Repository implements PresentableInterface
     protected static $model = null;
 
     /**
-     * Default length of time in minutes to cache a query.
-     * @var integer
-     */
-    protected static $cache_time = 10;
-
-    /**
      * The Model wrapped in the instance.
      * @var \C4tech\Foundation\Model
      */
