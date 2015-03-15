@@ -25,7 +25,7 @@ abstract class Repository extends Base
         $this->setPropertyValue($this->repo, 'object', $this->mocked_model);
     }
 
-    public function stubCreate($config_model = null, $data = null, $return = true)
+    public function stubCreate($linked_model = null, $data = null, $return = true)
     {
         $model_instance = Mockery::mock('C4tech\Support\Model');
 
@@ -37,7 +37,7 @@ abstract class Repository extends Base
             ->getMock();
 
         Config::shouldReceive('get')
-            ->with($config_model, $config_model)
+            ->with($linked_model, $linked_model)
             ->once()
             ->andReturn($model);
 
