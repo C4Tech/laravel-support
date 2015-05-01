@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 class Model extends BaseModel implements ModelInterface
 {
     /**
-     * Consume the Presentable and DateFilter traits.
+     * Consume the DateFilter trait
      */
     use DateFilter;
 
