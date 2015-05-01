@@ -2,19 +2,18 @@
 
 use C4tech\Support\Contracts\ModelInterface;
 use C4tech\Support\Traits\DateFilter;
-use C4tech\Support\Traits\Presentable;
 use Illuminate\Database\Eloquent\Model as BaseModel;
-use Robbo\Presenter\PresentableInterface;
+
 
 /**
  * A foundation Model with useful features.
  */
-class Model extends BaseModel implements ModelInterface, PresentableInterface
+class Model extends BaseModel implements ModelInterface
 {
     /**
      * Consume the Presentable and DateFilter traits.
      */
-    use DateFilter, Presentable;
+    use DateFilter;
 
     /**
      * @inheritdoc
