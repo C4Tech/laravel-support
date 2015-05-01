@@ -4,14 +4,13 @@ use C4tech\Support\Contracts\ModelInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
-use Robbo\Presenter\PresentableInterface;
 
 /**
  * Repository
  *
  * Common business logic wrapper to an Eloquent Model.
  */
-abstract class Repository implements PresentableInterface
+abstract class Repository
 {
     const CACHE_SHORT =     1;
     const CACHE_LONG  =    10;
@@ -194,16 +193,6 @@ abstract class Repository implements PresentableInterface
         return $this->object;
     }
 
-    /**
-     * Get Presenter
-     *
-     * Default method to return the model's presenter.
-     * @return mixed
-     */
-    public function getPresenter()
-    {
-        return $this->object->getPresenter();
-    }
 
     /**
      * Get Tags

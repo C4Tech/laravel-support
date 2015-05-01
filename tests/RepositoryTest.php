@@ -443,21 +443,6 @@ class RepositoryTest extends TestCase
         expect($this->repo->update($data))->true();
     }
 
-    public function testGetPresenter()
-    {
-        $object = Mockery::mock('C4tech\Support\Model[getPresenter]')
-            ->shouldReceive('getPresenter')
-            ->once()
-            ->andReturn(true)
-            ->getMock();
-
-        $reflection = new ReflectionClass($this->repo);
-        $instance = $reflection->getProperty('object');
-        $instance->setAccessible(true);
-        $instance->setValue($this->repo, $object);
-
-        expect($this->repo->getPresenter())->true();
-    }
 
     public function testGetTagsNull()
     {
@@ -557,14 +542,6 @@ class RepositoryTest extends TestCase
         expect($method->invoke(null, $prefix, $oid, $suffix))->equals($prefix . '-' . $oid . '-' . $suffix);
     }
 
-    public function testGetMethod()
-    {
-        $this->repo->shouldReceive('getPresenter')
-            ->once()
-            ->andReturn(true);
-
-        expect($this->repo->presenter)->true();
-    }
 
     public function testGetProperty()
     {

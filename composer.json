@@ -22,13 +22,12 @@
     "require": {
         "php": ">=5.4.0",
         "codeception/verify": "0.x",
-        "illuminate/database": "4.x",
-        "illuminate/routing": "4.x",
-        "illuminate/support": "4.x",
+        "illuminate/database": "5.x",
+        "illuminate/routing": "5.x",
+        "illuminate/support": "5.x",
         "mockery/mockery": "0.x",
         "nesbot/carbon": "1.x",
-        "phpunit/phpunit": "4.x",
-        "robclancy/presenter": "1.x"
+        "phpunit/phpunit": "4.x"
     },
     "autoload": {
         "psr-4": {
