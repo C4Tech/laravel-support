@@ -103,17 +103,19 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
 
         if (!isset(static::$instances[$key]) || $force) {
             $model = Config::get(static::$model, static::$model);
-            $query = $model::query()
-                ->cacheTags([$key, $cache_key])
-                ->remember(self::CACHE_LONG);
 
             // Remove the in-memory cache
             if ($force) {
                 unset(static::$instances[$key]);
             }
 
+            $object = Cache::tags([$key, $cache_key])
+                ->remember(md5($model . $object_id), self::CACHE_LONG, function () use ($model, $object_id) {
+                    return $model::find($object_id);
+                });
+
             // Save the instance in memory if we find it
-            if ($object = $query->find($object_id)) {
+            if ($object) {
                 static::$instances[$key] = $this->make($object);
             }
         }
@@ -236,7 +238,6 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
     {
         return $this->object;
     }
-
 
     /**
      * Get Tags
