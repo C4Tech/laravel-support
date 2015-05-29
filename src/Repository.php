@@ -2,16 +2,19 @@
 
 use C4tech\Support\Contracts\ModelInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use JsonSerializable;
 
 /**
  * Repository
  *
  * Common business logic wrapper to an Eloquent Model.
  */
-abstract class Repository
+abstract class Repository implements Arrayable, Jsonable, JsonSerializable
 {
     const CACHE_SHORT =     1;
     const CACHE_LONG  =    10;
@@ -149,7 +152,7 @@ abstract class Repository
      */
     protected function pushCache()
     {
-        $key = array_shift($this->getTags());
+        $key = $this->formatTag($this->object->id);
         if ($this->object->exists && !isset(static::$instances[$key])) {
             static::$instances[$key] = $this;
         }
@@ -284,6 +287,37 @@ abstract class Repository
         } else {
             return $prefix . '-' . $oid . '-' . $suffix;
         }
+    }
+
+    /**
+     * Convert the model instance to JSON.
+     *
+     * @param  int  $options
+     * @return string
+     */
+    public function toJson($options = 0)
+    {
+        return $this->object->toJson($options);
+    }
+
+    /**
+     * Convert the object into something JSON serializable.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->object->jsonSerialize();
+    }
+
+    /**
+     * Convert the model instance to an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->object->toArray();
     }
 
     /**
