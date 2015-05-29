@@ -1,6 +1,7 @@
 <?php namespace C4tech\Support;
 
 use C4tech\Support\Contracts\ModelInterface;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -65,6 +66,23 @@ abstract class Repository
 
         $model::saved($clear_cache);
         $model::deleted($clear_cache);
+    }
+
+    /**
+     * Find or Fail
+     *
+     * Wrapper to the find method which throws an error if the Model is not found.
+     * @param  integer $object_id The primary id of the object.
+     * @return static             Repository wrapper.
+     * @throws ModelNotFoundException
+     */
+    public function findOrFail($object_id)
+    {
+        if ($object = $this->find($object_id)) {
+            return $object;
+        }
+
+        throw (new ModelNotFoundException)->setModel(static::$model);
     }
 
     /**
@@ -180,6 +198,29 @@ abstract class Repository
             ]
         );
         return $this->object->update($data);
+    }
+
+    /**
+     * Delete
+     *
+     * Delete the model.
+     * @return static
+     */
+    public function delete()
+    {
+        Log::debug(
+            'Deleting Model',
+            [
+                'model' => Config::get(static::$model, static::$model),
+                'id'    => $this->object->id
+            ]
+        );
+
+        $key = $this->formatTag($this->object->id);
+        $status = $this->object->delete();
+        unset(static::$instances[$key]);
+
+        return $status;
     }
 
     /**
