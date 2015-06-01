@@ -10,7 +10,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '/resources/config.php' => config_path('c4tech.php'),
+            __DIR__ . '/../resources/config.php' => config_path('c4tech.php'),
         ]);
     }
 
@@ -19,6 +19,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/resources/config.php', 'c4tech');
+        $this->mergeConfigFrom(__DIR__ . '/../resources/config.php', 'c4tech');
     }
 }
