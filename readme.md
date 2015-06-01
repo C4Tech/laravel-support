@@ -139,3 +139,5 @@ statements that do simple `where()` statements.
 ## Installation and setup
 
 1. Add `"c4tech/support": "1.x"` to your composer requirements and run `composer update`.
+2. Add `C4tech\Support\ServiceProvider` to `config/app.php` in the 'providers' array.
+3. `php artisan vendor:publish`

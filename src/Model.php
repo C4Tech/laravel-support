@@ -2,8 +2,8 @@
 
 use C4tech\Support\Contracts\ModelInterface;
 use C4tech\Support\Traits\DateFilter;
+use C4tech\Support\Traits\JsonableApiModel;
 use Illuminate\Database\Eloquent\Model as BaseModel;
-
 
 /**
  * A foundation Model with useful features.
@@ -11,9 +11,9 @@ use Illuminate\Database\Eloquent\Model as BaseModel;
 class Model extends BaseModel implements ModelInterface
 {
     /**
-     * Consume the DateFilter trait
+     * Consume traits.
      */
-    use DateFilter;
+    use DateFilter, JsonableApiModel;
 
     /**
      * @inheritdoc
@@ -30,5 +30,30 @@ class Model extends BaseModel implements ModelInterface
     public function getDates()
     {
         return array_merge(parent::getDates(), ['deleted_at']);
+    }
+
+    /**
+     * Overloads the jsonified model data in order to convert
+     * snake_case keys into camelCase.
+     *
+     * @param  int  $options
+     * @return string
+     */
+    public function toJson($options = 0)
+    {
+        return json_encode($this->toJsonableArray(), $options);
+    }
+
+    /**
+     * JSON Serialize
+     *
+     * Overloads the jsonable model data in order to convert
+     * snake_case keys into camelCase.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return $this->toJsonableArray();
     }
 }
