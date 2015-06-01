@@ -4,6 +4,7 @@ use C4tech\Support\Contracts\ModelInterface;
 use C4tech\Support\Traits\DateFilter;
 use C4tech\Support\Traits\JsonableApiModel;
 use Illuminate\Database\Eloquent\Model as BaseModel;
+use Illuminate\Support\Facades\Config;
 
 /**
  * A foundation Model with useful features.
@@ -33,27 +34,18 @@ class Model extends BaseModel implements ModelInterface
     }
 
     /**
-     * Overloads the jsonified model data in order to convert
-     * snake_case keys into camelCase.
+     * To Array
      *
-     * @param  int  $options
-     * @return string
-     */
-    public function toJson($options = 0)
-    {
-        return json_encode($this->toJsonableArray(), $options);
-    }
-
-    /**
-     * JSON Serialize
-     *
-     * Overloads the jsonable model data in order to convert
-     * snake_case keys into camelCase.
+     * Wraps the default toArray method so that key names are
+     * converted to camelCase for API handling.
      *
      * @return array
      */
-    public function jsonSerialize()
+    protected function toArray()
     {
-        return $this->toJsonableArray();
+        $data = parent::toArray();
+        return (Config::get('c4tech.jsonify_output', true)) ?
+            $this->convertToCamelCase($data) :
+            $data;
     }
 }
