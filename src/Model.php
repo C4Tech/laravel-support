@@ -41,7 +41,7 @@ class Model extends BaseModel implements ModelInterface
      *
      * @return array
      */
-    protected function toArray()
+    public function toArray()
     {
         $data = parent::toArray();
         return (Config::get('c4tech.jsonify_output', true)) ?
