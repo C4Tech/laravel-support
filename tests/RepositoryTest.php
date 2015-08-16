@@ -142,6 +142,25 @@ class RepositoryTest extends TestCase
         expect_not($this->repo->boot());
     }
 
+    public function testFindOrFailSucceeds()
+    {
+        $this->repo->shouldReceive('find')
+            ->andReturn(true);
+
+        expect($this->repo->findOrFail(1))->true();
+    }
+
+    /**
+     * @expectedException Illuminate\Database\Eloquent\ModelNotFoundException
+     */
+    public function testFindOrFailFails()
+    {
+        $this->repo->shouldReceive('find')
+            ->andReturnNull();
+
+        expect_not($this->repo->findOrFail(1));
+    }
+
     public function testFindFailure()
     {
         $object_id = 11;
@@ -157,21 +176,27 @@ class RepositoryTest extends TestCase
             ->once()
             ->andReturn($key);
 
-        $query = Mockery::mock('stdClass');
-        $query->shouldReceive('find')
-            ->with($object_id)
-            ->once()
-            ->andReturn(null);
-
         $model = Mockery::mock('C4tech\Support\Model')
             ->makePartial();
-        $model->shouldReceive('query->cacheTags->remember')
-            ->andReturn($query);
+        $model->shouldReceive('__toString')
+            ->andReturn('model');
+        $model->shouldReceive('find')
+            ->with($object_id)
+            ->once()
+            ->andReturnNull();
 
         Config::shouldReceive('get')
             ->with(null, null)
             ->once()
             ->andReturn($model);
+
+        Cache::shouldReceive('tags->remember')
+            ->with(Mockery::type('array'))
+            ->with(Mockery::type('string'), 10, Mockery::on(function ($closure) use ($model, $object_id) {
+                expect($closure())->null();
+
+                return true;
+            }))->once();
 
         expect_not($this->repo->find($object_id));
     }
@@ -191,21 +216,27 @@ class RepositoryTest extends TestCase
             ->once()
             ->andReturn($key);
 
-        $query = Mockery::mock('stdClass');
-        $query->shouldReceive('find')
+        $model = Mockery::mock('C4tech\Support\Model')
+            ->makePartial();
+        $model->shouldReceive('__toString')
+            ->andReturn('model');
+        $model->shouldReceive('find')
             ->with($object_id)
             ->once()
             ->andReturn(null);
-
-        $model = Mockery::mock('C4tech\Support\Model')
-            ->makePartial();
-        $model->shouldReceive('query->cacheTags->remember')
-            ->andReturn($query);
 
         Config::shouldReceive('get')
             ->with(null, null)
             ->once()
             ->andReturn($model);
+
+        Cache::shouldReceive('tags->remember')
+            ->with(Mockery::type('array'))
+            ->with(Mockery::type('string'), 10, Mockery::on(function ($closure) {
+                expect($closure())->null();
+
+                return true;
+            }))->once();
 
         $reflection = new ReflectionClass($this->repo);
         $property = $reflection->getProperty('instances');
@@ -236,21 +267,28 @@ class RepositoryTest extends TestCase
             ->makePartial();
         $object->exists = true;
 
-        $query = Mockery::mock('stdClass');
-        $query->shouldReceive('find')
+        $model = Mockery::mock('C4tech\Support\Model')
+            ->makePartial();
+        $model->shouldReceive('__toString')
+            ->andReturn('model');
+        $model->shouldReceive('find')
             ->with($object_id)
             ->once()
             ->andReturn($object);
-
-        $model = Mockery::mock('C4tech\Support\Model')
-            ->makePartial();
-        $model->shouldReceive('query->cacheTags->remember')
-            ->andReturn($query);
 
         Config::shouldReceive('get')
             ->with(null, null)
             ->once()
             ->andReturn($model);
+
+        Cache::shouldReceive('tags->remember')
+            ->with(Mockery::type('array'))
+            ->with(Mockery::type('string'), Mockery::type('integer'), Mockery::on(function ($closure) use ($object) {
+                expect($closure())->equals($object);
+
+                return true;
+            }))->once()
+            ->andReturn($object);
 
         $this->repo->shouldReceive('make')
             ->with($object)
@@ -338,13 +376,16 @@ class RepositoryTest extends TestCase
     public function testPushCache()
     {
         $key = 'test-key-145';
+        $id = 145;
 
-        $this->repo->shouldReceive('getTags')
+        $this->repo->shouldReceive('formatTag')
+            ->with($id)
             ->once()
-            ->andReturn([$key]);
+            ->andReturn($key);
 
         $object = new stdClass;
         $object->exists = true;
+        $object->id = $id;
 
         $reflection = new ReflectionClass($this->repo);
 
@@ -443,6 +484,45 @@ class RepositoryTest extends TestCase
         expect($this->repo->update($data))->true();
     }
 
+    public function testDelete()
+    {
+        $model = 'TestClass';
+        $instances = [
+            'tag' => 'A TestClass Instance'
+        ];
+
+        $object = Mockery::mock('C4tech\Support\Model[delete]')
+            ->shouldReceive('delete')
+            ->once()
+            ->andReturn(true)
+            ->getMock();
+        $object->id = 10;
+
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn($model);
+
+        Log::shouldReceive('debug')
+            ->with(Mockery::type('string'), Mockery::type('array'))
+            ->once();
+
+        $this->repo->shouldReceive('formatTag')
+            ->with($object->id)
+            ->once()
+            ->andReturn('tag');
+
+        $reflection = new ReflectionClass($this->repo);
+        $instance = $reflection->getProperty('object');
+        $instance->setAccessible(true);
+        $instance->setValue($this->repo, $object);
+        $objects = $reflection->getProperty('instances');
+        $objects->setAccessible(true);
+        $objects->setValue($this->repo, $instances);
+
+        expect($this->repo->delete())->true();
+        expect($objects->getValue($this->repo))->hasntKey('tag');
+    }
 
     public function testGetTagsNull()
     {
@@ -529,7 +609,7 @@ class RepositoryTest extends TestCase
         expect($method->invoke(null, $prefix, $oid))->equals($prefix . '-' . $oid);
     }
 
-    public function testBuildTagSuffic()
+    public function testBuildTagSuffix()
     {
         $prefix = 'appendix';
         $oid = 19;
@@ -542,6 +622,68 @@ class RepositoryTest extends TestCase
         expect($method->invoke(null, $prefix, $oid, $suffix))->equals($prefix . '-' . $oid . '-' . $suffix);
     }
 
+    public function testToJson()
+    {
+        $object = Mockery::mock('stdClass');
+        $object->shouldReceive('toJson')
+            ->once()
+            ->andReturn(false);
+
+        $reflection = new ReflectionClass($this->repo);
+        $property = $reflection->getProperty('object');
+        $property->setAccessible(true);
+        $property->setValue($this->repo, $object);
+
+        expect($this->repo->toJson())->false();
+    }
+
+    public function testToJsonOption()
+    {
+        $option = 45;
+
+        $object = Mockery::mock('stdClass');
+        $object->shouldReceive('toJson')
+            ->with($option)
+            ->once()
+            ->andReturn(false);
+
+        $reflection = new ReflectionClass($this->repo);
+        $property = $reflection->getProperty('object');
+        $property->setAccessible(true);
+        $property->setValue($this->repo, $object);
+
+        expect($this->repo->toJson($option))->false();
+    }
+
+    public function testJsonSerialize()
+    {
+        $object = Mockery::mock('stdClass');
+        $object->shouldReceive('jsonSerialize')
+            ->once()
+            ->andReturn(false);
+
+        $reflection = new ReflectionClass($this->repo);
+        $property = $reflection->getProperty('object');
+        $property->setAccessible(true);
+        $property->setValue($this->repo, $object);
+
+        expect($this->repo->jsonSerialize())->false();
+    }
+
+    public function testToArray()
+    {
+        $object = Mockery::mock('stdClass');
+        $object->shouldReceive('toArray')
+            ->once()
+            ->andReturn(false);
+
+        $reflection = new ReflectionClass($this->repo);
+        $property = $reflection->getProperty('object');
+        $property->setAccessible(true);
+        $property->setValue($this->repo, $object);
+
+        expect($this->repo->toArray())->false();
+    }
 
     public function testGetProperty()
     {
