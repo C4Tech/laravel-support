@@ -4,14 +4,22 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    protected $configPath = '';
+
+    public function __construct($app)
+    {
+        $this->configPath = __DIR__ . '/../resources/config.php';
+        parent::__construct($app);
+    }
+
     /**
      * @inheritDoc
      */
     public function boot()
     {
-        $this->publishes([
-            __DIR__ . '/../resources/config.php' => config_path('c4tech.php'),
-        ]);
+        $configs = [];
+        $configs[$this->configPath] = config_path('c4tech.php');
+        $this->publishes($configs);
     }
 
     /**
@@ -19,6 +27,6 @@ class ServiceProvider extends BaseServiceProvider
      */
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../resources/config.php', 'c4tech');
+        $this->mergeConfigFrom($this->configPath, 'c4tech');
     }
 }
