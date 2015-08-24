@@ -30,4 +30,33 @@ class Controller extends BaseController
     {
         return Response::json($this->data, $status, $headers);
     }
+
+    /**
+     * Success
+     *
+     * Convenience wrapper for respond() to automatically set success
+     * value and return a 200 response.
+     * @param  boolean $success Success value (default is true)
+     * @param  array   $headers Additional headers to send
+     * @return \Illuminate\Http\Response   Laravel response
+     */
+    protected function success($success = true, $headers = [])
+    {
+        $this->data['success'] = $success;
+        return $this->respond(200, $headers);
+    }
+
+    /**
+     * Failure
+     *
+     * Convenience wrapper for respond() to automatically return a
+     * failed response.
+     * @param  integer $responseCode HTTP Response code (default is 500)
+     * @param  array   $headers Additional headers to send
+     * @return \Illuminate\Http\Response   Laravel response
+     */
+    protected function failure($responseCode = 500, $headers = [])
+    {
+        return $this->respond($responseCode, $headers);
+    }
 }

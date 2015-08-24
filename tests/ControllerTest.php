@@ -56,4 +56,24 @@ class ControllerTest extends TestCase
 
         expect($this->controller->respond($status, $headers))->true();
     }
+
+    public function testSuccessCallsResponse()
+    {
+        $this->controller->shouldReceive('respond')
+            ->with(200, [])
+            ->once()
+            ->andReturn(true);
+
+        expect($this->controller->success())->true();
+    }
+
+    public function testFailureCallsResponse()
+    {
+        $this->controller->shouldReceive('respond')
+            ->with(500, [])
+            ->once()
+            ->andReturn(false);
+
+        expect($this->controller->failure())->false();
+    }
 }
