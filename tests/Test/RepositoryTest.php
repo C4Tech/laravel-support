@@ -74,8 +74,7 @@ class RepositoryTest extends TestCase
     public function testStubCreate()
     {
         $this->object->setRepository('C4tech\Support\Repository', 'C4tech\Support\Model');
-        $method = $this->getMethod('stubCreate');
-        $method->invoke($this->object);
+        $this->object->stubCreate();
 
         // Ensure the repo is set
         $property = $this->getProperty('repo');
@@ -83,5 +82,18 @@ class RepositoryTest extends TestCase
         expect($mocked_repo instanceof MockInterface)->true();
 
         expect($mocked_repo->create())->true();
+    }
+
+    public function testStubUpdate()
+    {
+        $this->object->setRepository('C4tech\Support\Repository', 'C4tech\Support\Model');
+        $this->object->stubUpdate();
+
+        // Ensure the repo is set
+        $property = $this->getProperty('repo');
+        $mocked_repo = $property->getValue($this->object);
+        expect($mocked_repo instanceof MockInterface)->true();
+
+        expect($mocked_repo->update())->true();
     }
 }

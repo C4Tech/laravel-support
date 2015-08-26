@@ -50,7 +50,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
      */
     public function boot()
     {
-        if (!($model = Config::get(static::$model, static::$model))) {
+        if (!($model = $this->getModelClass())) {
             return;
         }
 
@@ -102,7 +102,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
         $cache_key = $this->formatTag($object_id, 'object');
 
         if (!isset(static::$instances[$key]) || $force) {
-            $model = Config::get(static::$model, static::$model);
+            $model = $this->getModelClass();
 
             // Remove the in-memory cache
             if ($force) {
@@ -110,9 +110,13 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
             }
 
             $object = Cache::tags([$key, $cache_key])
-                ->remember(md5($model . $object_id), self::CACHE_LONG, function () use ($model, $object_id) {
-                    return $model::find($object_id);
-                });
+                ->remember(
+                    $this->getCacheId('object', $object_id),
+                    self::CACHE_LONG,
+                    function () use ($model, $object_id) {
+                        return $model::find($object_id);
+                    }
+                );
 
             // Save the instance in memory if we find it
             if ($object) {
@@ -142,7 +146,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
      */
     protected function pullModel(ModelInterface &$model = null)
     {
-        $class = Config::get(static::$model, static::$model);
+        $class = $this->getModelClass();
         return (!is_null($model)) ? $model : new $class;
     }
 
@@ -173,6 +177,39 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
+     * Get Model Class
+     *
+     * Central method to identify the underlying model's class.
+     * @return string
+     */
+    public function getModelClass()
+    {
+        return Config::get(static::$model, static::$model);
+    }
+
+    /**
+     * Get Cache Id
+     *
+     * Central method to generate an MD5 hash for identifying
+     * queries in the cache.
+     * @param  string  $suffix    Short text identifier
+     * @param  integer $object_id The model's ID
+     * @return string
+     */
+    public function getCacheId($suffix, $object_id = null)
+    {
+        if (!isset($object_id)) {
+            $object_id = '';
+
+            if ($this->object && $this->object->id) {
+                $object_id = $this->object->id;
+            }
+        }
+
+        return md5($this->getModelClass() . $object_id . $suffix);
+    }
+
+    /**
      * Create
      *
      * Creates a new model, fills it with data, and saves it.
@@ -180,7 +217,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
      */
     public function create($data = [])
     {
-        $model = Config::get(static::$model, static::$model);
+        $model = $this->getModelClass();
         Log::debug('Creating new Model', ['model' => $model, 'data' => $data]);
         $instance = $model::create($data);
         return $this->make($instance);
@@ -197,7 +234,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
         Log::debug(
             'Updating Model',
             [
-                'model' => Config::get(static::$model, static::$model),
+                'model' => $this->getModelClass(),
                 'id'    => $this->object->id,
                 'data'  => $data
             ]
@@ -216,7 +253,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
         Log::debug(
             'Deleting Model',
             [
-                'model' => Config::get(static::$model, static::$model),
+                'model' => $this->getModelClass(),
                 'id'    => $this->object->id
             ]
         );
@@ -266,7 +303,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
      */
     public function formatTag($oid, $suffix = null)
     {
-        return static::buildTag(Config::get(static::$model, static::$model), $oid, $suffix);
+        return static::buildTag($this->getModelClass(), $oid, $suffix);
     }
 
     /**

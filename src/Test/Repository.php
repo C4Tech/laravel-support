@@ -25,9 +25,13 @@ abstract class Repository extends Base
         $this->setPropertyValue($this->repo, 'object', $this->mocked_model);
     }
 
-    public function stubCreate($linked_model = null, $data = null, $return = true)
+    public function stubCreate($data = null, $return = true)
     {
         $model_instance = Mockery::mock('C4tech\Support\Model');
+
+        Log::shouldReceive('debug')
+            ->with(Mockery::type('string'), Mockery::type('array'))
+            ->once();
 
         $model = Mockery::mock('C4tech\Support\Model[create]')
             ->shouldReceive('create')
@@ -36,17 +40,30 @@ abstract class Repository extends Base
             ->andReturn($model_instance)
             ->getMock();
 
-        Config::shouldReceive('get')
-            ->with($linked_model, $linked_model)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
+        $this->repo->shouldReceive('make')
+            ->with($model_instance)
+            ->once()
+            ->andReturn($return);
+    }
+
+    public function stubUpdate($data = null, $return = true)
+    {
         Log::shouldReceive('debug')
             ->with(Mockery::type('string'), Mockery::type('array'))
             ->once();
 
-        $this->repo->shouldReceive('make')
-            ->with($model_instance)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn('class');
+
+        $this->mocked_model->shouldReceive('update')
+            ->with($data)
             ->once()
             ->andReturn($return);
     }

@@ -32,8 +32,8 @@ class RepositoryTest extends TestCase
 
     public function testBootNull()
     {
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn(null);
 
@@ -54,8 +54,8 @@ class RepositoryTest extends TestCase
             ->once()
             ->andReturn(false);
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -80,8 +80,8 @@ class RepositoryTest extends TestCase
             ->with(Mockery::type('callable'))
             ->once();
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -117,8 +117,8 @@ class RepositoryTest extends TestCase
                 })
             );
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -178,17 +178,20 @@ class RepositoryTest extends TestCase
 
         $model = Mockery::mock('C4tech\Support\Model')
             ->makePartial();
-        $model->shouldReceive('__toString')
-            ->andReturn('model');
         $model->shouldReceive('find')
             ->with($object_id)
             ->once()
             ->andReturnNull();
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
+
+        $this->repo->shouldReceive('getCacheId')
+            ->with('object', $object_id)
+            ->once()
+            ->andReturn('hash');
 
         Cache::shouldReceive('tags->remember')
             ->with(Mockery::type('array'))
@@ -225,10 +228,15 @@ class RepositoryTest extends TestCase
             ->once()
             ->andReturn(null);
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
+
+        $this->repo->shouldReceive('getCacheId')
+            ->with('object', $object_id)
+            ->once()
+            ->andReturn('hash');
 
         Cache::shouldReceive('tags->remember')
             ->with(Mockery::type('array'))
@@ -276,10 +284,15 @@ class RepositoryTest extends TestCase
             ->once()
             ->andReturn($object);
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
+
+        $this->repo->shouldReceive('getCacheId')
+            ->with('object', $object_id)
+            ->once()
+            ->andReturn('hash');
 
         Cache::shouldReceive('tags->remember')
             ->with(Mockery::type('array'))
@@ -343,8 +356,8 @@ class RepositoryTest extends TestCase
         $model = 'stdClass';
         $reflection = new ReflectionClass($this->repo);
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -360,8 +373,8 @@ class RepositoryTest extends TestCase
         $object = Mockery::mock('C4tech\Support\Model');
         $object->exists = true;
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn(null);
 
@@ -419,10 +432,58 @@ class RepositoryTest extends TestCase
             ->times(4)
             ->andReturn($model);
 
-        $repo = new MockRepository();
-        $new = $repo->make($mock);
+        $repo = new MockRepository;
 
-        expect(get_class($new))->equals('C4tech\Test\Support\MockRepository');
+        \PHPUnit_Framework_Assert::assertInstanceOf('C4tech\Support\Repository', $repo->make($mock));
+    }
+
+    public function testGetModelClass()
+    {
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->once()
+            ->andReturn(true);
+
+        expect($this->repo->getModelClass())->true();
+    }
+
+    public function testGetCacheIdDefault()
+    {
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn('class');
+
+        expect($this->repo->getCacheId('test'))->equals(md5('classtest'));
+    }
+
+    public function testGetCacheIdParam()
+    {
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn('class');
+
+        expect($this->repo->getCacheId('test', 5))->equals(md5('class5test'));
+    }
+
+    public function testGetCacheIdModel()
+    {
+        $model = new stdClass;
+        $model->exists = true;
+        $model->id = 4;
+
+        $reflection = new ReflectionClass($this->repo);
+        $instance = $reflection->getProperty('object');
+        $instance->setAccessible(true);
+        $instance->setValue($this->repo, $model);
+
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn('class');
+
+        expect($this->repo->getCacheId('test'))->equals(md5('class4test'));
     }
 
     public function testCreate()
@@ -437,8 +498,8 @@ class RepositoryTest extends TestCase
             ->andReturn($model_instance)
             ->getMock();
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -467,8 +528,8 @@ class RepositoryTest extends TestCase
             ->getMock();
         $object->id = 10;
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -498,8 +559,8 @@ class RepositoryTest extends TestCase
             ->getMock();
         $object->id = 10;
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
@@ -574,8 +635,8 @@ class RepositoryTest extends TestCase
         $oid = 5;
         $suffix = 'magic';
 
-        Config::shouldReceive('get')
-            ->with(null, null)
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
             ->once()
             ->andReturn($model);
 
