@@ -1,11 +1,15 @@
 checks:
-    php: true
+  php: true
+
 tools:
-    external_code_coverage: true
-    php_code_sniffer:
-        config:
-            standard: "PSR2"
+  external_code_coverage: true
+  php_code_sniffer:
+    config:
+      standard: "PSR2"
+  php_cs_fixer:
+      config: { level: psr2 }
+
 filter:
-    excluded_paths:
-        - tests/*
+  excluded_paths:
+    - tests/*
 
