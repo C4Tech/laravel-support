@@ -3,6 +3,10 @@
 A package with a lot of traits and foundational classes to accelerate
 development. Made with love by C4 Tech and Design.
 
+[![Latest Stable Version](https://poser.pugx.org/c4tech/support/v/stable)](https://packagist.org/packages/c4tech/support)
+[![Build Status](https://travis-ci.org/C4Tech/laravel-support.svg?branch=master)](https://travis-ci.org/C4Tech/laravel-support)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/C4Tech/laravel-support/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/C4Tech/laravel-support/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/C4Tech/laravel-support/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/C4Tech/laravel-support/?branch=master)
 
 ## Foundational Classes
 
