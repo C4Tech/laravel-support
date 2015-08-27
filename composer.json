@@ -1,6 +1,6 @@
 {
     "name": "c4tech/support",
-    "description": "Base classes and traits for C4-developed applications.",
+    "description": "Base classes and traits for API backends.",
     "license": "MIT",
     "authors": [
         {
