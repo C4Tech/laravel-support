@@ -37,7 +37,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
 
     /**
      * The Model wrapped in the instance.
-     * @var \C4tech\Foundation\Model
+     * @var \C4tech\Support\Model
      */
     protected $object = null;
 
