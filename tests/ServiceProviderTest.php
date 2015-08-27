@@ -35,7 +35,8 @@ class ServiceProviderTest extends TestCase
     {
         $this->provider->shouldReceive('publishes')
             ->with(Mockery::on(function ($configMapping) {
-                $key = array_pop(array_keys($configMapping));
+                $keys = array_keys($configMapping);
+                $key = array_pop($keys);
                 $value = array_pop($configMapping);
                 expect($key)->contains('/resources/config.php');
                 expect($value)->equals('test/c4tech.php');
