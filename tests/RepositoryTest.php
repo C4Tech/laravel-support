@@ -3,6 +3,7 @@
 use C4tech\Support\Model;
 use C4tech\Support\Repository;
 use Codeception\Verify;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -437,6 +438,30 @@ class RepositoryTest extends TestCase
         \PHPUnit_Framework_Assert::assertInstanceOf('C4tech\Support\Repository', $repo->make($mock));
     }
 
+    public function testMakeCollection()
+    {
+        $parameter = Mockery::mock('C4tech\Support\Contracts\ModelInterface');
+        $response = 'beta';
+        $collection = new Collection([$parameter]);
+        $match = new Collection([$response]);
+
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->twice()
+            ->andReturn('C4tech\Support\Model');
+
+        $parameter->id = 45;
+        $parameter->exists = true;
+
+        $mock = Mockery::mock('C4tech\Support\Repository[make]', [$parameter]);
+        $mock->shouldReceive('make')
+            ->with($parameter)
+            ->once()
+            ->andReturn($response);
+
+        expect($mock->makeCollection($collection))->equals($match);
+    }
+
     public function testGetModelClass()
     {
         Config::shouldReceive('get')
@@ -583,6 +608,85 @@ class RepositoryTest extends TestCase
 
         expect($this->repo->delete())->true();
         expect($objects->getValue($this->repo))->hasntKey('tag');
+    }
+
+    public function testGetAllEmpty()
+    {
+        $cache_id = 'cache-tag';
+        $collection = new Collection();
+        $model = Mockery::mock('C4tech\Support\Contracts\ModelInterface');
+        $model->shouldReceive('all')
+            ->withNoArgs()
+            ->once()
+            ->andReturn($collection);
+
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn($model);
+
+        $this->repo->shouldReceive('getCacheId')
+            ->with('all', null)
+            ->once()
+            ->andReturn($cache_id);
+
+        Cache::shouldReceive('tags->remember')
+            ->with([$model])
+            ->with(
+                $cache_id,
+                Mockery::type('integer'),
+                Mockery::on(function ($closure) use ($collection) {
+                    expect($closure())->equals($collection);
+                    return true;
+                })
+            )
+            ->once()
+            ->andReturn(true);
+
+        expect($this->repo->getAll())->equals(true);
+    }
+
+    public function testGetAllCollection()
+    {
+        $cache_id = 'cache-tag';
+        $collection_model = Mockery::mock('C4tech\Support\Contracts\ModelInterface');
+        $collection = new Collection([$collection_model]);
+        $response = 'awwyeah';
+        $model = Mockery::mock('C4tech\Support\Contracts\ModelInterface[all]');
+        $model->shouldReceive('all')
+            ->withNoArgs()
+            ->once()
+            ->andReturn($collection);
+
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn($model);
+
+        $this->repo->shouldReceive('getCacheId')
+            ->with('all', null)
+            ->once()
+            ->andReturn($cache_id);
+
+        $this->repo->shouldReceive('makeCollection')
+            ->with($collection)
+            ->once()
+            ->andReturn($response);
+
+        Cache::shouldReceive('tags->remember')
+            ->with([$model])
+            ->with(
+                $cache_id,
+                Mockery::type('integer'),
+                Mockery::on(function ($closure) use ($response) {
+                    expect($closure())->equals($response);
+                    return true;
+                })
+            )
+            ->once()
+            ->andReturn(true);
+
+        expect($this->repo->getAll())->equals(true);
     }
 
     public function testGetTagsNull()

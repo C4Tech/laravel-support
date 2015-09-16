@@ -1,9 +1,11 @@
 <?php namespace C4tech\Support;
 
 use C4tech\Support\Contracts\ModelInterface;
+use C4tech\Support\Contracts\ResourceInterface;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +16,7 @@ use JsonSerializable;
  *
  * Common business logic wrapper to an Eloquent Model.
  */
-abstract class Repository implements Arrayable, Jsonable, JsonSerializable
+abstract class Repository implements Arrayable, Jsonable, JsonSerializable, ResourceInterface
 {
     const CACHE_SHORT =     1;
     const CACHE_LONG  =    10;
@@ -177,6 +179,20 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
+     * Make Collection
+     *
+     * Tranform a collection of Models into a collection of repositories.
+     * @param  Collection $models The models to transform
+     * @return Collection
+     */
+    public function makeCollection(Collection $models)
+    {
+        return $models->map(function ($item) {
+            return $this->make($item);
+        });
+    }
+
+    /**
      * Get Model Class
      *
      * Central method to identify the underlying model's class.
@@ -215,7 +231,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
      * Creates a new model, fills it with data, and saves it.
      * @return static
      */
-    public function create($data = [])
+    public function create(array $data = [])
     {
         $model = $this->getModelClass();
         Log::debug('Creating new Model', ['model' => $model, 'data' => $data]);
@@ -229,7 +245,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
      * Update the model and saves it.
      * @return static
      */
-    public function update($data = [])
+    public function update(array $data = [])
     {
         Log::debug(
             'Updating Model',
@@ -263,6 +279,20 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable
         unset(static::$instances[$key]);
 
         return $status;
+    }
+
+    public function getAll()
+    {
+        $model = $this->getModelClass();
+        return Cache::tags([$model])
+            ->remember(
+                $this->getCacheId('all', null),
+                self::CACHE_LONG,
+                function () use ($model) {
+                    $results = $model::all();
+                    return ($results->count()) ? $this->makeCollection($results) : $results;
+                }
+            );
     }
 
     /**
