@@ -35,7 +35,7 @@ interface ResourceInterface
      * Patches an array of attributes (i.e. from request input) onto an existing
      * resource item and saves the item.
      * @param  array  $data Attributes to be updated.
-     * @return bool
+     * @return integer|bool
      */
     public function update(array $data = []);
 

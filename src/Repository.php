@@ -74,12 +74,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Find or Fail
-     *
-     * Wrapper to the find method which throws an error if the Model is not found.
-     * @param  integer $object_id The primary id of the object.
-     * @return static             Repository wrapper.
-     * @throws ModelNotFoundException
+     * @inheritDoc
      */
     public function findOrFail($object_id)
     {
@@ -131,7 +126,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
 
     /**
      * Constructor
-     * @param C4tech\Support\Contracts\ModelInterface $object The Model to wrap
+     * @param C4tech\Support\Contracts\ModelInterface $model The Model to wrap
      */
     public function __construct(ModelInterface $model = null)
     {
@@ -170,7 +165,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
      * Make
      *
      * Create a new instance with a live Model.
-     * @param  \C4tech\Support\Contracts\ModelInterface $object The Model to wrap
+     * @param  \C4tech\Support\Contracts\ModelInterface $model The Model to wrap
      * @return static
      */
     public function make(ModelInterface $model)
@@ -226,10 +221,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Create
-     *
-     * Creates a new model, fills it with data, and saves it.
-     * @return static
+     * @inheritDoc
      */
     public function create(array $data = [])
     {
@@ -240,10 +232,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Update
-     *
-     * Update the model and saves it.
-     * @return static
+     * @inheritDoc
      */
     public function update(array $data = [])
     {
@@ -259,10 +248,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Delete
-     *
-     * Delete the model.
-     * @return static
+     * @inheritDoc
      */
     public function delete()
     {
@@ -281,6 +267,9 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
         return $status;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getAll()
     {
         $model = $this->getModelClass();
@@ -341,7 +330,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
      *
      * Helper method to create a cache tag for the related model. General format
      * is {model}-{id}(-{suffx})? (e.g. App\Models\Users-18, App\Models\Users-10-posts)
-     * @param  string $base   Base tag
+     * @param  string $prefix Base tag
      * @param  int    $oid    Object ID
      * @param  string $suffix Additional text to inject into tag
      * @return string         Cache tag

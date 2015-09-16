@@ -13,7 +13,7 @@ trait Reflectable
     /**
      * Get Method
      *
-     * @param  stdClass $object The object on which the method is defined
+     * @param  object   $object The object on which the method is defined
      * @param  string   $method The method name to retrieve
      * @return ReflectionMethod An invoke-able method
      */
@@ -27,7 +27,7 @@ trait Reflectable
 
     /**
      * Get Property
-     * @param  stdClass $object   The object on which the property is defined
+     * @param  object   $object   The object on which the property is defined
      * @param  string   $property The property to retrieve
      * @return ReflectionProperty A publicly accessible property
      */
@@ -41,7 +41,7 @@ trait Reflectable
 
     /**
      * Get Property Value
-     * @param  stdClass $object   The object on which the property is defined
+     * @param  object   $object   The object on which the property is defined
      * @param  string   $property The property to retrieve
      * @return mixed              The current value for the property
      */
@@ -53,7 +53,7 @@ trait Reflectable
 
     /**
      * set Property Value
-     * @param  stdClass $object   The object on which the property is defined
+     * @param  object   $object   The object on which the property is defined
      * @param  string   $property The property to retrieve
      * @param  mixed    $value    The value of the property to set
      * @param  boolean  $static   Whether this property is static or not

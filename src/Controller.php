@@ -21,7 +21,6 @@ class Controller extends BaseController
      * Respond
      *
      * Generates a response according to the detected format.
-     * @param  string  $view    Full name of view
      * @param  integer $status  HTTP status code
      * @param  array   $headers Headers to pass to response
      * @return \Illuminate\Http\Response   Laravel response
