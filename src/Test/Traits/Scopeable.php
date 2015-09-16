@@ -24,7 +24,7 @@ trait Scopeable
      * @param  string $left   Expected property to test
      * @param  mixed  $right  Expected value to test
      * @param  string $comp   Expected comparison to test
-     * @param  mixed  $param  Parameter to pass for setting $right value
+     * @param  mixed  ...     Parameter to pass for setting $right value
      * @return void
      */
     protected function verifyScopeWhere($method, $left, $right, $comp = '=')

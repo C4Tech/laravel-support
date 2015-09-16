@@ -9,10 +9,11 @@ trait Relatable
      * Verify BelongsTo
      *
      * Common test to ensure relationship method returns a BelongTo.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $foreignKey Name of foreign key on child table (e.g. user_id)
-     * @param  string $otherKey   Name of primary key on parent table (e.g. id)
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $foreignKey Name of foreign key on child table (e.g. user_id)
+     * .param  string $otherKey   Name of primary key on parent table (e.g. id)
      * @return void
      */
     protected function verifyBelongsTo()
@@ -24,11 +25,12 @@ trait Relatable
      * Verify BelongsToMany
      *
      * Common test to ensure relationship method returns a BelongToMany.
-     * @param  string $method   Model method to test
-     * @param  string $class    Class name of related Model
-     * @param  string $table    Name of pivot table
-     * @param  string $leftKey  Name of foreign key on pivot table to this Model
-     * @param  string $rightKey Name of foreign key on pivot table to other Model
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method   Model method to test
+     * .param  string $class    Class name of related Model
+     * .param  string $table    Name of pivot table
+     * .param  string $leftKey  Name of foreign key on pivot table to this Model
+     * .param  string $rightKey Name of foreign key on pivot table to other Model
      * @return void
      */
     protected function verifyBelongsToMany()
@@ -40,10 +42,11 @@ trait Relatable
      * Verify HasMany
      *
      * Common test to ensure relationship method returns a HasMany.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $foreignKey Name of foreign key on child table (e.g. user_id)
-     * @param  string $otherKey   Name of primary key on parent table (e.g. id)
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $foreignKey Name of foreign key on child table (e.g. user_id)
+     * .param  string $otherKey   Name of primary key on parent table (e.g. id)
      * @return void
      */
     protected function verifyHasMany()
@@ -55,11 +58,12 @@ trait Relatable
      * Verify HasManyThrough
      *
      * Common test to ensure relationship method returns a HasManyThrough.
-     * @param  string $method    Model method to test
-     * @param  string $class     Class name of related Model
-     * @param  string $through   Intermediate Model gluing the relationship
-     * @param  string $firstKey  Name of foreign key on intermediate table to this Model
-     * @param  string $secondKey Name of foreign key on distant table to intermediate Model
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method    Model method to test
+     * .param  string $class     Class name of related Model
+     * .param  string $through   Intermediate Model gluing the relationship
+     * .param  string $firstKey  Name of foreign key on intermediate table to this Model
+     * .param  string $secondKey Name of foreign key on distant table to intermediate Model
      * @return void
      */
     protected function verifyHasManyThrough()
@@ -71,10 +75,11 @@ trait Relatable
      * Verify HasOne
      *
      * Common test to ensure relationship method returns a HasOne.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $foreignKey Name of foreign key on child table (e.g. user_id)
-     * @param  string $otherKey   Name of primary key on parent table (e.g. id)
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $foreignKey Name of foreign key on child table (e.g. user_id)
+     * .param  string $otherKey   Name of primary key on parent table (e.g. id)
      * @return void
      */
     protected function verifyHasOne()
@@ -86,12 +91,13 @@ trait Relatable
      * Verify MorphMany
      *
      * Common test to ensure relationship method returns a MorphMany.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $name       Name of morphable relationship (e.g. imageable)
-     * @param  string $morph_type Name of morph type column on foreign table (e.g. imageable_type)
-     * @param  string $morph_id   Name of morph id column on foreign table (e.g. imageable_id)
-     * @param  string $localKey   Name of primary key on this table
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $name       Name of morphable relationship (e.g. imageable)
+     * .param  string $morph_type Name of morph type column on foreign table (e.g. imageable_type)
+     * .param  string $morph_id   Name of morph id column on foreign table (e.g. imageable_id)
+     * .param  string $localKey   Name of primary key on this table
      * @return void
      */
     protected function verifyMorphMany()
@@ -103,12 +109,13 @@ trait Relatable
      * Verify MorphOne
      *
      * Common test to ensure relationship method returns a MorphOne.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $name       Name of morphable relationship (e.g. imageable)
-     * @param  string $morph_type Name of morph type column on foreign table (e.g. imageable_type)
-     * @param  string $morph_id   Name of morph id column on foreign table (e.g. imageable_id)
-     * @param  string $localKey   Name of primary key on this table
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $name       Name of morphable relationship (e.g. imageable)
+     * .param  string $morph_type Name of morph type column on foreign table (e.g. imageable_type)
+     * .param  string $morph_id   Name of morph id column on foreign table (e.g. imageable_id)
+     * .param  string $localKey   Name of primary key on this table
      * @return void
      */
     protected function verifyMorphOne()
@@ -120,10 +127,11 @@ trait Relatable
      * Verify MorphTo
      *
      * Common test to ensure relationship method returns a MorphTo.
-     * @param  string $method     Model method to test
-     * @param  string $name       Name of morphable relationship (e.g. imageable)
-     * @param  string $morph_type Name of morph type column on foreign table (e.g. imageable_type)
-     * @param  string $morph_id   Name of morph id column on foreign table (e.g. imageable_id)
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $name       Name of morphable relationship (e.g. imageable)
+     * .param  string $morph_type Name of morph type column on foreign table (e.g. imageable_type)
+     * .param  string $morph_id   Name of morph id column on foreign table (e.g. imageable_id)
      * @return void
      */
     protected function verifyMorphTo()
@@ -135,12 +143,13 @@ trait Relatable
      * Verify MorphToMany
      *
      * Common test to ensure relationship method returns a MorphToMany.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $name       Name of morphable relationship (e.g. imageable)
-     * @param  string $table      Name of pivot table
-     * @param  string $morphedKey Name of morph id column on pivot table (e.g. imageable_id)
-     * @param  string $foreignKey Name of foreign key on pivot table to other Model (e.g. image_id)
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $name       Name of morphable relationship (e.g. imageable)
+     * .param  string $table      Name of pivot table
+     * .param  string $morphedKey Name of morph id column on pivot table (e.g. imageable_id)
+     * .param  string $foreignKey Name of foreign key on pivot table to other Model (e.g. image_id)
      * @return void
      */
     protected function verifyMorphToMany()
@@ -152,12 +161,13 @@ trait Relatable
      * Verify MorphedByMany
      *
      * Common test to ensure relationship method returns a MorphedByMany.
-     * @param  string $method     Model method to test
-     * @param  string $class      Class name of related Model
-     * @param  string $name       Name of morphable relationship (e.g. imageable)
-     * @param  string $table      Name of pivot table
-     * @param  string $foreignKey Name of foreign key on pivot table to this Model (e.g. image_id)
-     * @param  string $morphedKey Name of morph id column on pivot table (e.g. imageable_id)
+     * @param  mixed  ...         Variable parameters
+     * .param  string $method     Model method to test
+     * .param  string $class      Class name of related Model
+     * .param  string $name       Name of morphable relationship (e.g. imageable)
+     * .param  string $table      Name of pivot table
+     * .param  string $foreignKey Name of foreign key on pivot table to this Model (e.g. image_id)
+     * .param  string $morphedKey Name of morph id column on pivot table (e.g. imageable_id)
      * @return void
      */
     protected function verifyMorphedByMany()
@@ -224,8 +234,9 @@ trait Relatable
      * Verify Relationship Zero
      *
      * Test when relationship method expects no parameters.
-     * @param  string $relation Type of Relationship method is called
-     * @param  array  $args     Arguments to test
+     * @param  string   $relation Type of Relationship method is called
+     * @param  array    $args     Arguments to test
+     * @param  callable $callback Callback to customize expectation
      * @return void
      */
     protected function verifyRelationshipZero($method, $relation, callable $callback = null)
@@ -251,6 +262,7 @@ trait Relatable
      * @param  string $relation Type of Relationship method is called
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
+     * @param  callable $callback Callback to customize expectation
      * @return void
      */
     protected function verifyRelationshipOne($method, $relation, $param_a, callable $callback = null)
@@ -277,6 +289,7 @@ trait Relatable
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
      * @param  mixed  $param_b  A parameter
+     * @param  callable $callback Callback to customize expectation
      * @return void
      */
     protected function verifyRelationshipTwo($method, $relation, $param_a, $param_b, callable $callback = null)
@@ -304,6 +317,7 @@ trait Relatable
      * @param  mixed  $param_a  A parameter
      * @param  mixed  $param_b  A parameter
      * @param  mixed  $param_c  A parameter
+     * @param  callable $callback Callback to customize expectation
      * @return void
      */
     protected function verifyRelationshipThree(
@@ -338,6 +352,7 @@ trait Relatable
      * @param  mixed  $param_b  A parameter
      * @param  mixed  $param_c  A parameter
      * @param  mixed  $param_d  A parameter
+     * @param  callable $callback Callback to customize expectation
      * @return void
      */
     protected function verifyRelationshipFour(
@@ -374,6 +389,7 @@ trait Relatable
      * @param  mixed  $param_c  A parameter
      * @param  mixed  $param_d  A parameter
      * @param  mixed  $param_e  A parameter
+     * @param  callable $callback Callback to customize expectation
      * @return void
      */
     protected function verifyRelationshipFive(
