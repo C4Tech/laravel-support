@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Config;
 
 /**
  * A foundation Model with useful features.
+ *
+ * @property integer $id
  */
 class Model extends BaseModel implements ModelInterface
 {

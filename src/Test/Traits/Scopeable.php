@@ -5,6 +5,8 @@ use Codeception\Verify;
 
 trait Scopeable
 {
+    use Modelable;
+
     /**
      * Get Query Mock
      *
