@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 /**
  * A foundation Model with useful features.
  *
+ * @method   getContent
  * @property ParameterBad $json JSON input
  */
 trait JsonableApiRequest

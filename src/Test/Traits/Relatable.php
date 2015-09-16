@@ -3,6 +3,9 @@
 use Mockery;
 use Codeception\Verify;
 
+/**
+ * @method getModelMock
+ */
 trait Relatable
 {
     /**
@@ -234,8 +237,8 @@ trait Relatable
      * Verify Relationship Zero
      *
      * Test when relationship method expects no parameters.
+     * @param  string   $method   Name of relation method to invoke
      * @param  string   $relation Type of Relationship method is called
-     * @param  array    $args     Arguments to test
      * @param  callable $callback Callback to customize expectation
      * @return void
      */
@@ -259,6 +262,7 @@ trait Relatable
      * Verify Relationship One
      *
      * Test when relationship method expects one parameter.
+     * @param  string $method   Name of relation method to invoke
      * @param  string $relation Type of Relationship method is called
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
@@ -285,6 +289,7 @@ trait Relatable
      * Verify Relationship Two
      *
      * Test when relationship method expects two parameters.
+     * @param  string $method   Name of relation method to invoke
      * @param  string $relation Type of Relationship method is called
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
@@ -312,6 +317,7 @@ trait Relatable
      * Verify Relationship Three
      *
      * Test when relationship method expects three parameters.
+     * @param  string $method   Name of relation method to invoke
      * @param  string $relation Type of Relationship method is called
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
@@ -346,6 +352,7 @@ trait Relatable
      * Verify Relationship Four
      *
      * Test when relationship method expects four parameters.
+     * @param  string $method   Name of relation method to invoke
      * @param  string $relation Type of Relationship method is called
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
@@ -382,6 +389,7 @@ trait Relatable
      * Verify Relationship Five
      *
      * Test when relationship method expects five parameters.
+     * @param  string $method   Name of relation method to invoke
      * @param  string $relation Type of Relationship method is called
      * @param  array  $args     Arguments to test
      * @param  mixed  $param_a  A parameter
