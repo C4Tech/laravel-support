@@ -170,6 +170,12 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
      */
     public function make(ModelInterface $model)
     {
+        $class = $this->getModelClass();
+
+        if (!($model instanceof $class)) {
+            throw new ModelMismatchException();
+        }
+
         return new static($model);
     }
 
@@ -177,13 +183,17 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
      * Make Collection
      *
      * Tranform a collection of Models into a collection of repositories.
-     * @param  Collection $models The models to transform
+     * @param  Collection|ModelInterface $models The models to transform
      * @return Collection
      */
-    public function makeCollection(Collection $models)
+    public function makeCollection($models)
     {
-        return $models->map(function ($item) {
-            return $this->make($item);
+        if (!($models instanceof Collection)) {
+            $models = new Collection([$models]);
+        }
+
+        return $models->map(function ($model) {
+            return $this->make($model);
         });
     }
 

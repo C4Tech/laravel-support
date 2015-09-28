@@ -6,6 +6,9 @@ class ServiceProvider extends BaseServiceProvider
 {
     protected $configPath = '';
 
+    /**
+     * @inheritDoc
+     */
     public function __construct($app)
     {
         $this->configPath = __DIR__ . '/../resources/config.php';
