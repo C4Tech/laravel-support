@@ -136,9 +136,12 @@ class RepositoryTest extends TestCase
         Cache::shouldReceive('tags->flush')
             ->once();
 
-        $this->repo->shouldReceive('formatTag')
-            ->with($model->id, 'object')
-            ->andReturn($tag);
+        $this->repo->shouldReceive('make')
+            ->with($model)
+            ->andReturn($this->repo);
+        $this->repo->shouldReceive('getTags')
+            ->with('object')
+            ->andReturn([$tag]);
 
         expect_not($this->repo->boot());
     }
@@ -430,12 +433,31 @@ class RepositoryTest extends TestCase
 
         Config::shouldReceive('get')
             ->with($model, $model)
-            ->times(4)
+            ->times(5)
             ->andReturn($model);
 
         $repo = new MockRepository;
 
         \PHPUnit_Framework_Assert::assertInstanceOf('C4tech\Support\Repository', $repo->make($mock));
+    }
+
+    /**
+     * @expectedException C4tech\Support\Exceptions\ModelMismatchException
+     */
+    public function testMakeException()
+    {
+        $mock = new Model;
+        $model = 'C4tech\Alternate\Class';
+
+        Config::shouldReceive('get')
+            ->never();
+
+        $this->repo->shouldReceive('getModelClass')
+            ->withNoArgs()
+            ->once()
+            ->andReturn($model);
+
+        expect($this->repo->make($mock))->null();
     }
 
     public function testMakeCollection()
@@ -460,6 +482,29 @@ class RepositoryTest extends TestCase
             ->andReturn($response);
 
         expect($mock->makeCollection($collection))->equals($match);
+    }
+
+    public function testMakeCollectionSolo()
+    {
+        $parameter = Mockery::mock('C4tech\Support\Contracts\ModelInterface');
+        $response = 'beta';
+        $match = new Collection([$response]);
+
+        Config::shouldReceive('get')
+            ->with(null, null)
+            ->twice()
+            ->andReturn('C4tech\Support\Model');
+
+        $parameter->id = 45;
+        $parameter->exists = true;
+
+        $mock = Mockery::mock('C4tech\Support\Repository[make]', [$parameter]);
+        $mock->shouldReceive('make')
+            ->with($parameter)
+            ->once()
+            ->andReturn($response);
+
+        expect($mock->makeCollection($parameter))->equals($match);
     }
 
     public function testGetModelClass()

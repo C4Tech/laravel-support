@@ -2,6 +2,7 @@
 
 use C4tech\Support\Contracts\ModelInterface;
 use C4tech\Support\Contracts\ResourceInterface;
+use C4tech\Support\Exceptions\ModelMismatchException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
@@ -62,11 +63,12 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
         }
 
         $clear_cache = function ($object) {
-            $tag = $this->formatTag($object->id, 'object');
+            $repository = $this->make($object);
+            $tags = $repository->getTags('object');
             if (Config::get('app.debug')) {
-                Log::debug('Flushing model cache', ['tag' => $tag]);
+                Log::debug('Flushing model cache', ['tags' => $tags]);
             }
-            Cache::tags([$tag])->flush();
+            Cache::tags($tags)->flush();
         };
 
         $model::saved($clear_cache);
