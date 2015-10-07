@@ -31,4 +31,8 @@ interface CachingInterface
      * @return string         Cache tag
      */
     public function formatTag($oid, $suffix = null);
+
+    public function flushTags($tags);
+
+    public function cache($cache_id, $tags, $closure);
 }
