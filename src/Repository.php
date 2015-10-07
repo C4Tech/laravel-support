@@ -59,7 +59,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
 
         // Flush caches related to the object
         if (Config::get('app.debug')) {
-            Log::info('Binding cache flusher for model.', ['model' => $model]);
+            Log::debug('Binding cache flusher for model.', ['model' => $model]);
         }
 
         $clear_cache = function ($object) {
@@ -88,12 +88,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Find
-     *
-     * A glorified Manager that brings along an actual Model.
-     * @param  integer $object_id The primary id of the object.
-     * @param  boolean $force     Force reloading the data?
-     * @return static             Repository wrapper.
+     * @inheritDoc
      */
     public function &find($object_id, $force = false)
     {
@@ -164,11 +159,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Make
-     *
-     * Create a new instance with a live Model.
-     * @param  \C4tech\Support\Contracts\ModelInterface $model The Model to wrap
-     * @return static
+     * @inheritDoc
      */
     public function make(ModelInterface $model)
     {
@@ -182,11 +173,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Make Collection
-     *
-     * Tranform a collection of Models into a collection of repositories.
-     * @param  Collection|ModelInterface $models The models to transform
-     * @return Collection
+     * @inheritDoc
      */
     public function makeCollection($models)
     {
@@ -200,10 +187,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Get Model Class
-     *
-     * Central method to identify the underlying model's class.
-     * @return string
+     * @inheritDoc
      */
     public function getModelClass()
     {
@@ -211,13 +195,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Get Cache Id
-     *
-     * Central method to generate an MD5 hash for identifying
-     * queries in the cache.
-     * @param  string  $suffix    Short text identifier
-     * @param  integer $object_id The model's ID
-     * @return string
+     * @inheritDoc
      */
     public function getCacheId($suffix, $object_id = null)
     {
@@ -238,7 +216,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     public function create(array $data = [])
     {
         $model = $this->getModelClass();
-        Log::debug('Creating new Model', ['model' => $model, 'data' => $data]);
+        Log::info('Creating new Model', ['model' => $model, 'data' => $data]);
         $instance = $model::create($data);
         return $this->make($instance);
     }
@@ -248,12 +226,11 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
      */
     public function update(array $data = [])
     {
-        Log::debug(
+        Log::info(
             'Updating Model',
             [
                 'model' => $this->getModelClass(),
-                'id'    => $this->object->id,
-                'data'  => $data
+                'id'    => $this->object->id
             ]
         );
         return $this->object->update($data);
@@ -264,7 +241,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
      */
     public function delete()
     {
-        Log::debug(
+        Log::info(
             'Deleting Model',
             [
                 'model' => $this->getModelClass(),
@@ -297,10 +274,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Get Model
-     *
-     * Access the underlying model (necessary for methods associating relationships).
-     * @return \C4tech\Support\Model
+     * @inheritDoc
      */
     public function &getModel()
     {
@@ -308,11 +282,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Get Tags
-     *
-     * Retrieves the tags which should be set for a read query.
-     * @param  string $suffix Additional text to inject into tag
-     * @return array  Cache tags
+     * @inheritDoc
      */
     public function getTags($suffix = null)
     {
@@ -325,12 +295,7 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Format Tag
-     *
-     * Helper method to create a cache tag for the related model.
-     * @param  int    $oid    Object ID
-     * @param  string $suffix Additional text to inject into tag
-     * @return string         Cache tag
+     * @inheritDoc
      */
     public function formatTag($oid, $suffix = null)
     {
@@ -359,34 +324,35 @@ abstract class Repository implements Arrayable, Jsonable, JsonSerializable, Reso
     }
 
     /**
-     * Convert the model instance to JSON.
-     *
-     * @param  int  $options
-     * @return string
+     * @inheritDoc
      */
     public function toJson($options = 0)
     {
-        return $this->object->toJson($options);
+        return json_encode($this->jsonSerialize(), $options);
     }
 
     /**
-     * Convert the object into something JSON serializable.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function jsonSerialize()
     {
-        return $this->object->jsonSerialize();
+        return $this->toArray();
     }
 
     /**
-     * Convert the model instance to an array.
-     *
-     * @return array
+     * @inheritDoc
      */
     public function toArray()
     {
         return $this->object->toArray();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function __toString()
+    {
+        return $this->toJson();
     }
 
     /**
