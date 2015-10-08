@@ -65,6 +65,7 @@ abstract class Repository implements Arrayable, CachingInterface, Jsonable, Json
      */
     public function __construct(ModelInterface $model = null)
     {
+        $this->cache_base = $this->getModelClass();
         $this->object = $this->pullModel($model);
         $this->pushCache();
     }

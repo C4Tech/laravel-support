@@ -3,15 +3,15 @@
 interface CachingInterface
 {
     /**
-     * Get Cache Id
+     * Get Cache Key
      *
-     * Central method to generate an MD5 hash for identifying
+     * Central method to generate an unique key for identifying
      * queries in the cache.
      * @param  string  $suffix    Short text identifier
      * @param  integer $object_id The model's ID
      * @return string
      */
-    public function getCacheId($suffix, $object_id = null);
+    public function getCacheKey($suffix, $object_id = null);
 
     /**
      * Get Tags
@@ -23,16 +23,23 @@ interface CachingInterface
     public function getTags($suffix = null);
 
     /**
-     * Format Tag
+     * Flush Tags
      *
-     * Helper method to create a cache tag for the related model.
-     * @param  int    $oid    Object ID
-     * @param  string $suffix Additional text to inject into tag
-     * @return string         Cache tag
+     * Conveniently flush tags from the cache.
+     * @param  array|string $tags Suffix to pass through getTags or array of tags.
+     * @return void
      */
-    public function formatTag($oid, $suffix = null);
-
     public function flushTags($tags);
 
-    public function cache($cache_id, $tags, $closure);
+    /**
+     * Cache
+     *
+     * Conveniently cache results with tags.
+     * @param  string       $suffix   Suffix to pass through getCacheId
+     * @param  array|string $tags     Suffix to pass through getTags or array of tags
+     * @param  integer      $expires  Time (in minutes) to keep cached
+     * @param  Closure      $closure  Closure to produce the results
+     * @return mixed                  Closure response
+     */
+    public function cache($suffix, $tags, $closure);
 }

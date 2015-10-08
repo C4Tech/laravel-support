@@ -107,7 +107,7 @@ trait Resource
      */
     public function getModelClass()
     {
-        return Config::get(static::$model, static::$model);
+        return Config::get(static::$model, static::class);
     }
 
     /**

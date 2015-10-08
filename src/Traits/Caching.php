@@ -1,14 +1,21 @@
 <?php namespace C4tech\Support;
 
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 
 trait Caching
 {
     /**
+     * Base string for cache keys and tags.
+     * @var string
+     */
+    protected $cache_base = 'model';
+
+    /**
      * @inheritDoc
      */
-    public function getCacheId($suffix, $object_id = null)
+    public function getCacheKey($suffix, $object_id = null)
     {
         if (!isset($object_id)) {
             $object_id = '';
@@ -18,7 +25,21 @@ trait Caching
             }
         }
 
-        return md5($this->getModelClass() . $object_id . $suffix);
+        return md5($this->cache_base . $object_id . $suffix);
+    }
+
+    /**
+     * Get Cache Id
+     *
+     * Deprecated. Use getCacheKey.
+     * @param  string  $suffix    Short text identifier
+     * @param  integer $object_id The model's ID
+     * @return string
+     * @deprecated since 3.2.0
+     */
+    public function getCacheId($suffix, $object_id = null)
+    {
+        return $this->getCacheKey($suffix, $object_id);
     }
 
     /**
@@ -35,11 +56,16 @@ trait Caching
     }
 
     /**
-     * @inheritDoc
+     * Format Tag
+     *
+     * Helper method to create a cache tag for the related model.
+     * @param  int    $oid    Object ID
+     * @param  string $suffix Additional text to inject into tag
+     * @return string         Cache tag
      */
-    public function formatTag($oid, $suffix = null)
+    protected function formatTag($oid, $suffix = null)
     {
-        return $this->buildTag($this->getModelClass(), $oid, $suffix);
+        return $this->buildTag($this->cache_base, $oid, $suffix);
     }
 
     /**
@@ -61,5 +87,34 @@ trait Caching
         } else {
             return $prefix . '-' . $oid . '-' . $suffix;
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function flushTags($tags)
+    {
+        if (!is_array($tags)) {
+            $tags = $this->getTags($tags);
+        }
+
+        if (Config::get('app.debug')) {
+            Log::debug('Flushing model cache', ['tags' => $tags]);
+        }
+
+        Cache::tags($tags)->flush();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function cache($suffix, $tags, $expires, $closure)
+    {
+        $key = $this->getCacheKey($suffix);
+        if (!is_array($tags)) {
+            $tags = $this->getTags($tags);
+        }
+
+        return Cache::tags($tags)->remember($key, $expires, $closure);
     }
 }
